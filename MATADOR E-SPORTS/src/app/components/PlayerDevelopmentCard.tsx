@@ -1,4 +1,4 @@
-import { FileVideo, MessageSquare, Award, ExternalLink } from "lucide-react";
+import { FileVideo, MessageSquare, ExternalLink } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import {
@@ -9,7 +9,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-export function PlayerDevelopmentCard() {
+interface PlayerDevelopmentCardProps {
+  onUploadVod?: () => void;
+}
+
+export function PlayerDevelopmentCard({ onUploadVod }: PlayerDevelopmentCardProps) {
   const skillData = [
     { subject: "Communication", value: 85, fullMark: 100 },
     { subject: "Aim", value: 78, fullMark: 100 },
@@ -33,13 +37,6 @@ export function PlayerDevelopmentCard() {
             Comprehensive player analysis and development tracking
           </p>
         </div>
-        <Button 
-          variant="outline"
-          className="bg-white/5 border-white/10 text-white hover:bg-white/10"
-        >
-          <Award className="h-4 w-4 mr-2" />
-          Full Report
-        </Button>
       </div>
 
       <div className="grid grid-cols-3 gap-6">
@@ -149,9 +146,12 @@ export function PlayerDevelopmentCard() {
             ))}
           </div>
           
-          <Button 
+          <Button
+            id="upload-vod-btn"
             className="w-full mt-4 bg-white/5 hover:bg-white/10 text-white border border-white/10"
+            onClick={onUploadVod}
           >
+            <FileVideo className="h-4 w-4 mr-2" />
             Upload New VOD
           </Button>
         </div>
