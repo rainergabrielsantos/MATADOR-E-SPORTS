@@ -40,6 +40,7 @@ const initialTickets: CoachingTicket[] = [
 ];
 
 export function useTickets() {
+  const { addNotification } = useNotifications();
   const [tickets, setTickets] = useState<CoachingTicket[]>(() => {
     const saved = localStorage.getItem("coaching_tickets");
     return saved ? JSON.parse(saved) : initialTickets;
@@ -57,13 +58,39 @@ export function useTickets() {
       createdAt: new Date().toISOString(),
     };
     setTickets((prev) => [newTicket, ...prev]);
+    
+    addNotification(
+      "ticket",
+      "New Coaching Request",
+      `${newTicket.playerName} submitted a new VOD for review.`,
+      "/dashboard/coach-terminal"
+    );
   };
 
   const updateTicketStatus = (ticketId: string, status: TicketStatus, annotatedVodUrl?: string) => {
     setTickets((prev) =>
-      prev.map((t) =>
-        t.id === ticketId ? { ...t, status, annotatedVodUrl: annotatedVodUrl || t.annotatedVodUrl } : t
-      )
+      prev.map((t) => {
+        if (t.id === ticketId) {
+          const updated = { ...t, status, annotatedVodUrl: annotatedVodUrl || t.annotatedVodUrl };
+
+          if (status === "Completed") {
+            addNotification(
+              "ticket",
+              "Coaching Review Ready",
+              "Your VOD has been reviewed! Click to view feedback.",
+              "/dashboard/player-terminal"
+            );
+          } else if (status === "In-Progress") {
+            addNotification(
+              "system",
+              "Review Started",
+              `A coach has started analyzing your VOD.`
+            );
+          }
+          return updated;
+        }
+        return t;
+      })
     );
   };
 

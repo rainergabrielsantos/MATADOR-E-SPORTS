@@ -12,6 +12,8 @@ import {
 } from "../components/ui/dialog";
 import { useEvents } from "../hooks/useEvents";
 import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Input } from "../components/ui/input";
 
 type EventTab = "upcoming" | "scrims" | "myrsvps";
 

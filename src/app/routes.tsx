@@ -11,6 +11,7 @@ import { RosterManager } from "./pages/RosterManager";
 import { ScoutingBoard } from "./pages/ScoutingBoard";
 import { LoginPage } from "./pages/LoginPage";
 import { TeamDashboard } from "./pages/TeamDashboard";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 function RootLayout() {
   return (
@@ -27,9 +28,11 @@ export const router = createBrowserRouter([
   {
     path: "/",
     Component: LoginPage,
+    errorElement: <ErrorBoundary />,
   },
   {
     path: "/dashboard",
+    errorElement: <ErrorBoundary />,
     element: (
       <ProtectedRoute>
         <RootLayout />
