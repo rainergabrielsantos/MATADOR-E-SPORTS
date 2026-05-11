@@ -21,7 +21,8 @@ export interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (csunId: string, password: string, role: Role) => Promise<void>;
+  login: (csunId: string, password: string) => Promise<void>;
+  register: (csunId: string, password: string, role: Role, username?: string) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   loading: boolean;
@@ -60,40 +61,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  const login = async (csunId: string, password: string, role: Role) => {
+  const login = async (csunId: string, password: string) => {
     const email = `${csunId}@csun.edu`;
     try {
-      // Try to sign in
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      
-      // If role was explicitly chosen in login, we might want to update it, 
-      // but usually role is set at registration. We'll update it here for testing ease.
-      const docRef = doc(db, "users", userCredential.user.uid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        await setDoc(docRef, { role }, { merge: true });
-        setUser((prev) => prev ? { ...prev, role } : null);
-      }
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (error: any) {
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-        // If user not found, create them (this acts as a seamless signup for testing)
-        try {
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          const newUser: Omit<User, "id"> = {
-            username: `Matador_${csunId.slice(-4)}`,
-            role: role,
-            csunId: csunId,
-          };
-          await setDoc(doc(db, "users", userCredential.user.uid), newUser);
-          setUser({ id: userCredential.user.uid, ...newUser });
-        } catch (signupError) {
-          console.error("Signup failed:", signupError);
-          throw signupError;
-        }
-      } else {
-        console.error("Login failed:", error);
-        throw error;
-      }
+      console.error("Login failed:", error);
+      throw error;
+    }
+  };
+
+  const register = async (csunId: string, password: string, role: Role, username?: string) => {
+    const email = `${csunId}@csun.edu`;
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const newUser: Omit<User, "id"> = {
+        username: username || `Matador_${csunId.slice(-4)}`,
+        role: role,
+        csunId: csunId,
+      };
+      await setDoc(doc(db, "users", userCredential.user.uid), newUser);
+      setUser({ id: userCredential.user.uid, ...newUser });
+    } catch (error: any) {
+      console.error("Registration failed:", error);
+      throw error;
     }
   };
 
@@ -103,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated: !!user, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

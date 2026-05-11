@@ -14,16 +14,29 @@ export function LoginPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [username, setUsername] = useState("");
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (csunId && password) {
       setIsLoading(true);
       setErrorMsg("");
       try {
-        await login(csunId, password, role);
+        if (isSignUp) {
+          await register(csunId, password, role, username);
+        } else {
+          await login(csunId, password);
+        }
         navigate("/dashboard");
       } catch (err: any) {
-        setErrorMsg("Invalid CSUN ID or Password. Please try again.");
+        if (err.code === 'auth/email-already-in-use') {
+          setErrorMsg("An account with this CSUN ID already exists.");
+        } else if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found') {
+          setErrorMsg("Invalid CSUN ID or Password. Please try again.");
+        } else {
+          setErrorMsg(err.message || "An error occurred. Please try again.");
+        }
       } finally {
         setIsLoading(false);
       }
@@ -76,25 +89,48 @@ export function LoginPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-[#a8b2bf] mb-2 px-1">
-                Access Level (Test)
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#a8b2bf] group-focus-within:text-[#CE1126] transition-colors">
-                  <UserCircle className="h-5 w-5" />
+            {isSignUp && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-[#a8b2bf] mb-2 px-1">
+                    Gamer Tag / Username
+                  </label>
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#a8b2bf] group-focus-within:text-[#CE1126] transition-colors">
+                      <UserCircle className="h-5 w-5" />
+                    </div>
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="block w-full pl-10 pr-3 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-[#CE1126]/50 focus:border-transparent transition-all"
+                      placeholder="MatadorPro"
+                      required={isSignUp}
+                    />
+                  </div>
                 </div>
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value as Role)}
-                  className="block w-full pl-10 pr-3 py-3 bg-white/5 border border-white/10 rounded-xl text-white appearance-none focus:outline-none focus:ring-2 focus:ring-[#CE1126]/50 focus:border-transparent transition-all [&>option]:bg-[#131318] [&>option]:text-white"
-                >
-                  <option value="Member">Member</option>
-                  <option value="Player">Player</option>
-                  <option value="Coach">Coach</option>
-                </select>
-              </div>
-            </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#a8b2bf] mb-2 px-1">
+                    Access Level
+                  </label>
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#a8b2bf] group-focus-within:text-[#CE1126] transition-colors">
+                      <Shield className="h-5 w-5" />
+                    </div>
+                    <select
+                      value={role}
+                      onChange={(e) => setRole(e.target.value as Role)}
+                      className="block w-full pl-10 pr-3 py-3 bg-white/5 border border-white/10 rounded-xl text-white appearance-none focus:outline-none focus:ring-2 focus:ring-[#CE1126]/50 focus:border-transparent transition-all [&>option]:bg-[#131318] [&>option]:text-white"
+                    >
+                      <option value="Member">Member</option>
+                      <option value="Player">Player (Varsity)</option>
+                      <option value="Coach">Coach (Staff)</option>
+                    </select>
+                  </div>
+                </div>
+              </>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-[#a8b2bf] mb-2 px-1">
@@ -126,15 +162,18 @@ export function LoginPage() {
               disabled={isLoading}
               className="w-full bg-[#CE1126] hover:bg-[#CE1126]/90 text-white py-6 rounded-xl text-lg font-bold shadow-lg shadow-[#CE1126]/20 transition-all active:scale-[0.98] group disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Authenticating...' : 'Sign In'}
+              {isLoading ? 'Authenticating...' : (isSignUp ? 'Create Account' : 'Sign In')}
               {!isLoading && <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />}
             </Button>
           </form>
 
           <div className="mt-8 text-center space-y-4">
-            <a href="#" className="text-sm text-[#a8b2bf] hover:text-[#CE1126] transition-colors">
-              Forgot your credentials?
-            </a>
+            <button 
+              onClick={() => { setIsSignUp(!isSignUp); setErrorMsg(""); }}
+              className="text-sm text-[#a8b2bf] hover:text-[#CE1126] transition-colors cursor-pointer"
+            >
+              {isSignUp ? "Already have an account? Sign In" : "Need an account? Sign Up"}
+            </button>
             <div className="flex items-center justify-center gap-2 text-xs text-white/30 uppercase tracking-widest">
               <div className="h-px w-8 bg-white/10" />
               <span>Security Verified</span>
