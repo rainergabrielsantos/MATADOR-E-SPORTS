@@ -11,11 +11,22 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<Role>("Member");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (csunId && password) {
-      login(csunId, role);
-      navigate("/dashboard");
+      setIsLoading(true);
+      setErrorMsg("");
+      try {
+        await login(csunId, password, role);
+        navigate("/dashboard");
+      } catch (err: any) {
+        setErrorMsg("Invalid CSUN ID or Password. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -104,12 +115,19 @@ export function LoginPage() {
               </div>
             </div>
 
+            {errorMsg && (
+              <div className="bg-[#CE1126]/10 border border-[#CE1126]/20 rounded-xl p-4 text-center">
+                <p className="text-[#CE1126] text-sm font-medium">{errorMsg}</p>
+              </div>
+            )}
+
             <Button
               type="submit"
-              className="w-full bg-[#CE1126] hover:bg-[#CE1126]/90 text-white py-6 rounded-xl text-lg font-bold shadow-lg shadow-[#CE1126]/20 transition-all active:scale-[0.98] group"
+              disabled={isLoading}
+              className="w-full bg-[#CE1126] hover:bg-[#CE1126]/90 text-white py-6 rounded-xl text-lg font-bold shadow-lg shadow-[#CE1126]/20 transition-all active:scale-[0.98] group disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Sign In
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              {isLoading ? 'Authenticating...' : 'Sign In'}
+              {!isLoading && <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />}
             </Button>
           </form>
 
