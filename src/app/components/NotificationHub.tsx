@@ -39,7 +39,7 @@ export function NotificationHub() {
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="relative h-10 w-10 text-[#a8b2bf] hover:text-white hover:bg-white/5 rounded-xl transition-all">
-          <Bell className="h-5 w-5" />
+          <Bell className={`h-5 w-5 transition-transform ${unreadCount > 0 ? 'animate-bounce' : ''}`} />
           {unreadCount > 0 && (
             <span className="absolute top-2 right-2 flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#CE1126] opacity-75"></span>
