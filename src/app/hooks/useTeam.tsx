@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNotifications } from "./useNotifications";
+import { db } from "../../lib/firebase";
+import { collection, addDoc, onSnapshot, query, where, orderBy, Timestamp } from "firebase/firestore";
 
 export interface TeamMember {
   id: string;
@@ -26,31 +28,6 @@ export interface TeamMatch {
   result?: string;
 }
 
-const initialRoster: TeamMember[] = [
-  { id: "u1", name: "RedMatador", role: "IGL / Entry", status: "online" },
-  { id: "u2", name: "AceMatador", role: "AWPer", status: "online" },
-  { id: "u3", name: "Shadow", role: "Support", status: "offline" },
-  { id: "u4", name: "FlexKing", role: "Lurker", status: "online" },
-  { id: "u5", name: "CoachX", role: "Coach / Analyst", status: "offline" },
-];
-
-const initialAnnouncements: TeamAnnouncement[] = [
-  {
-    id: "a1",
-    title: "Scrim Block Tonight",
-    content: "We have a scrim against UCLA at 8 PM. Please be in Discord 15 minutes early.",
-    author: "CoachX",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "a2",
-    title: "Jersey Sizing",
-    content: "Please fill out the jersey sizing form in the team Discord by Friday.",
-    author: "RedMatador",
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-  },
-];
-
 const initialMatches: TeamMatch[] = [
   {
     id: "m1",
@@ -70,34 +47,76 @@ const initialMatches: TeamMatch[] = [
 
 export function useTeam() {
   const { addNotification } = useNotifications();
-  const [roster] = useState<TeamMember[]>(initialRoster);
-  const [announcements, setAnnouncements] = useState<TeamAnnouncement[]>(() => {
-    const saved = localStorage.getItem("matador_team_announcements");
-    return saved ? JSON.parse(saved) : initialAnnouncements;
-  });
+  const [roster, setRoster] = useState<TeamMember[]>([]);
+  const [announcements, setAnnouncements] = useState<TeamAnnouncement[]>([]);
   const [matches] = useState<TeamMatch[]>(initialMatches);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem("matador_team_announcements", JSON.stringify(announcements));
-  }, [announcements]);
-
-  const addAnnouncement = (title: string, content: string, author: string) => {
-    const newAnnouncement: TeamAnnouncement = {
-      id: `a${Date.now()}`,
-      title,
-      content,
-      author,
-      createdAt: new Date().toISOString(),
-    };
-    setAnnouncements((prev) => [newAnnouncement, ...prev]);
-
-    addNotification(
-      "announcement",
-      `New Announcement: ${title}`,
-      content.length > 40 ? content.slice(0, 37) + "..." : content,
-      "/dashboard/team"
+    // Fetch Roster
+    const qRoster = query(
+      collection(db, "users"),
+      where("role", "in", ["Player", "Coach"])
     );
+
+    const unsubRoster = onSnapshot(qRoster, (snapshot) => {
+      const fetchedRoster = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.username,
+          role: data.role === "Player" ? "Varsity Player" : "Staff / Coach",
+          avatar: data.avatar,
+          status: "online" // Demo
+        } as TeamMember;
+      });
+      setRoster(fetchedRoster);
+    });
+
+    // Fetch Announcements
+    const qAnnouncements = query(
+      collection(db, "team_announcements"),
+      orderBy("createdAt", "desc")
+    );
+
+    const unsubAnnouncements = onSnapshot(qAnnouncements, (snapshot) => {
+      const fetchedAnnouncements = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : data.createdAt
+        } as TeamAnnouncement;
+      });
+      setAnnouncements(fetchedAnnouncements);
+      setLoading(false);
+    });
+
+    return () => {
+      unsubRoster();
+      unsubAnnouncements();
+    };
+  }, []);
+
+  const addAnnouncement = async (title: string, content: string, author: string) => {
+    try {
+      await addDoc(collection(db, "team_announcements"), {
+        title,
+        content,
+        author,
+        createdAt: Timestamp.now()
+      });
+
+      addNotification(
+        "announcement",
+        `New Announcement: ${title}`,
+        content.length > 40 ? content.slice(0, 37) + "..." : content,
+        "/dashboard/team"
+      );
+    } catch (error) {
+      console.error("Error adding announcement:", error);
+    }
   };
 
-  return { roster, announcements, matches, addAnnouncement };
+  return { roster, announcements, matches, addAnnouncement, loading };
 }

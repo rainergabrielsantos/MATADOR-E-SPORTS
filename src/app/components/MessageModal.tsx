@@ -16,7 +16,7 @@ interface MessageModalProps {
 
 export function MessageModal({ open, onOpenChange, recipientId, recipientName }: MessageModalProps) {
   const { user } = useAuth();
-  const { sendMessage, getConversation } = useMessages();
+  const { sendMessage, getConversation, loading } = useMessages(user?.id);
   const [content, setContent] = useState("");
 
   const conversation = getConversation(user?.id || "", recipientId);
@@ -41,21 +41,26 @@ export function MessageModal({ open, onOpenChange, recipientId, recipientName }:
         
         <ScrollArea className="h-[300px] p-4">
           <div className="space-y-4">
-            {conversation.length === 0 && (
-              <p className="text-center text-white/20 text-xs py-8">No messages yet. Start the conversation!</p>
-            )}
-            {conversation.map((msg) => (
-              <div key={msg.id} className={`flex flex-col ${msg.senderId === user?.id ? 'items-end' : 'items-start'}`}>
-                <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
-                  msg.senderId === user?.id ? 'bg-[#CE1126] text-white rounded-tr-none' : 'bg-white/10 text-[#a8b2bf] rounded-tl-none'
-                }`}>
-                  {msg.content}
-                </div>
-                <span className="text-[10px] text-white/20 mt-1">
-                  {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
+            {loading ? (
+              <div className="flex justify-center items-center h-full py-8">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#CE1126]"></div>
               </div>
-            ))}
+            ) : conversation.length === 0 ? (
+              <p className="text-center text-white/20 text-xs py-8">No messages yet. Start the conversation!</p>
+            ) : (
+              conversation.map((msg) => (
+                <div key={msg.id} className={`flex flex-col ${msg.senderId === user?.id ? 'items-end' : 'items-start'}`}>
+                  <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
+                    msg.senderId === user?.id ? 'bg-[#CE1126] text-white rounded-tr-none' : 'bg-white/10 text-[#a8b2bf] rounded-tl-none'
+                  }`}>
+                    {msg.content}
+                  </div>
+                  <span className="text-[10px] text-white/20 mt-1">
+                    {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </ScrollArea>
 

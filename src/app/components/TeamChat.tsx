@@ -8,7 +8,7 @@ import { Send, User } from "lucide-react";
 
 export function TeamChat() {
   const { user } = useAuth();
-  const { sendMessage, getConversation } = useMessages();
+  const { sendMessage, getConversation, loading } = useMessages(user?.id);
   const [content, setContent] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -29,6 +29,14 @@ export function TeamChat() {
       setContent("");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col h-full bg-[#131318] border border-white/10 rounded-2xl overflow-hidden items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#CE1126]"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full bg-[#131318] border border-white/10 rounded-2xl overflow-hidden">

@@ -27,20 +27,28 @@ import { Textarea } from "../components/ui/textarea";
 
 export function TeamDashboard() {
   const { user } = useAuth();
-  const { roster, announcements, matches, addAnnouncement } = useTeam();
+  const { roster, announcements, matches, addAnnouncement, loading } = useTeam();
   const [announcementDialogOpen, setAnnouncementDialogOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
 
-  const handleAddAnnouncement = (e: React.FormEvent) => {
+  const handleAddAnnouncement = async (e: React.FormEvent) => {
     e.preventDefault();
     if (user && newTitle && newContent) {
-      addAnnouncement(newTitle, newContent, user.username);
+      await addAnnouncement(newTitle, newContent, user.username);
       setNewTitle("");
       setNewContent("");
       setAnnouncementDialogOpen(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[500px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#CE1126]"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
