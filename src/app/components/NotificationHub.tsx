@@ -86,15 +86,29 @@ export function NotificationHub() {
 
         <ScrollArea className="h-[350px]">
           {filteredNotifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-[300px] text-[#a8b2bf] space-y-2">
-              <Bell className="h-8 w-8 opacity-10" />
-              <p className="text-[10px] uppercase font-bold tracking-widest opacity-40">No {filter !== 'all' ? filter : ''} alerts</p>
+            <div className="flex flex-col items-center justify-center h-[300px] px-8 text-center space-y-4">
+              <div className="relative">
+                <img 
+                  src="/assets/no-notifications.png" 
+                  alt="No notifications" 
+                  className="h-24 w-24 opacity-40 grayscale group-hover:grayscale-0 transition-all duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#131318] to-transparent" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] uppercase font-black tracking-[0.2em] text-white/40">Comms are clear</p>
+                <p className="text-[9px] text-[#a8b2bf] leading-relaxed max-w-[180px]">
+                  No {filter !== 'all' ? filter : ''} alerts at the moment. Stand by for team updates.
+                </p>
+              </div>
             </div>
           ) : (
             <div className="divide-y divide-white/5">
               {filteredNotifications.map((n) => (
                 <div 
                   key={n.id} 
+                  role="button"
+                  aria-label={`Notification: ${n.title}`}
                   className={`p-4 hover:bg-white/[0.05] transition-colors relative group cursor-pointer ${!n.read ? 'bg-[#CE1126]/[0.02]' : ''}`}
                   onClick={() => markAsRead(n.id)}
                 >
