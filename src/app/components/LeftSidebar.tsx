@@ -5,6 +5,7 @@ import { Badge } from "./ui/badge";
 import { useAuth } from "../hooks/useAuth";
 import { NotificationHub } from "./NotificationHub";
 import { Button } from "./ui/button";
+import { ProfileSettingsModal } from "./ProfileSettingsModal";
 
 export function LeftSidebar() {
   const { user, logout } = useAuth();
@@ -45,21 +46,23 @@ export function LeftSidebar() {
            </Button>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Avatar className="h-14 w-14 ring-2 ring-[#CE1126]">
-            <AvatarImage src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username || 'Matador'}`} />
-            <AvatarFallback>{user?.username?.[0] || 'M'}</AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="flex items-center gap-2">
-              <p className="text-white font-bold tracking-tight">{user?.username || 'Guest'}</p>
-              <Badge className="bg-[#CE1126]/20 text-[#CE1126] hover:bg-[#CE1126]/20 text-[10px] border border-[#CE1126]/20 uppercase">
-                {user?.role || 'Member'}
-              </Badge>
+        <ProfileSettingsModal>
+          <div className="flex items-center gap-3 cursor-pointer hover:bg-white/5 p-2 -mx-2 rounded-xl transition-colors group">
+            <Avatar className="h-14 w-14 ring-2 ring-[#CE1126] group-hover:scale-105 transition-transform">
+              <AvatarImage src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username || 'Matador'}`} />
+              <AvatarFallback>{user?.username?.[0] || 'M'}</AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="text-white font-bold tracking-tight">{user?.username || 'Guest'}</p>
+                <Badge className="bg-[#CE1126]/20 text-[#CE1126] hover:bg-[#CE1126]/20 text-[10px] border border-[#CE1126]/20 uppercase">
+                  {user?.role || 'Member'}
+                </Badge>
+              </div>
+              <p className="text-[10px] text-[#a8b2bf] uppercase font-bold tracking-widest mt-0.5">ID: {user?.id?.slice(-8) || '00000000'}</p>
             </div>
-            <p className="text-[10px] text-[#a8b2bf] uppercase font-bold tracking-widest mt-0.5">ID: {user?.id?.slice(-8) || '00000000'}</p>
           </div>
-        </div>
+        </ProfileSettingsModal>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 gap-2 text-center">

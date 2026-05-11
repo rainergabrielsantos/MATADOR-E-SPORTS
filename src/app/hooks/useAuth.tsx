@@ -23,6 +23,7 @@ interface AuthContextType {
   user: User | null;
   login: (csunId: string, password: string) => Promise<void>;
   register: (csunId: string, password: string, role: Role, username?: string) => Promise<void>;
+  updateProfile: (data: Partial<User>) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   loading: boolean;
@@ -88,13 +89,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateProfile = async (data: Partial<User>) => {
+    if (!user) return;
+    try {
+      const docRef = doc(db, "users", user.id);
+      await setDoc(docRef, data, { merge: true });
+      setUser(prev => prev ? { ...prev, ...data } : null);
+    } catch (error: any) {
+      console.error("Failed to update profile:", error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     await signOut(auth);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated: !!user, loading }}>
+    <AuthContext.Provider value={{ user, login, register, updateProfile, logout, isAuthenticated: !!user, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
