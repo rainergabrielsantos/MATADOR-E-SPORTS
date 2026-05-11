@@ -11,9 +11,17 @@ import { toast } from "sonner";
 import { MessageModal } from "./MessageModal";
 
 export function CoachingKanban() {
-  const { tickets, updateTicketStatus } = useTickets();
+  const { tickets, updateTicketStatus, loading } = useTickets();
   const [selectedTicket, setSelectedTicket] = useState<CoachingTicket | null>(null);
   const [feedbackUrl, setFeedbackUrl] = useState("");
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[300px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#CE1126]"></div>
+      </div>
+    );
+  }
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
   
   const [messageTicket, setMessageTicket] = useState<CoachingTicket | null>(null);

@@ -69,8 +69,16 @@ const milestones: Milestone[] = [
 
 export function PathToPro() {
   const { user } = useAuth();
-  const { tickets } = useTickets();
+  const { tickets, loading } = useTickets();
   const [expandedMilestone, setExpandedMilestone] = useState<string | null>("m3");
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[500px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#CE1126]"></div>
+      </div>
+    );
+  }
 
   const userTickets = tickets.filter(t => t.player_id === user?.id);
 

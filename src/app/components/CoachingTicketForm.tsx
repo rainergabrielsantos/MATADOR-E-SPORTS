@@ -16,11 +16,11 @@ export function CoachingTicketForm() {
   const [vodLink, setVodLink] = useState("");
   const [goals, setGoals] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
 
-    createTicket({
+    await createTicket({
       player_id: user.id,
       playerName: user.username,
       vodLink,

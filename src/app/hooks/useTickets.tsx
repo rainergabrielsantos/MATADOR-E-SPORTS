@@ -1,5 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNotifications } from "./useNotifications";
+import { db } from "../../lib/firebase";
+import { 
+  collection, 
+  addDoc, 
+  updateDoc, 
+  doc, 
+  onSnapshot, 
+  query, 
+  orderBy, 
+  Timestamp 
+} from "firebase/firestore";
 
 export type TicketStatus = "Pending" | "Assigned" | "In-Progress" | "Completed";
 
@@ -16,92 +27,95 @@ export interface CoachingTicket {
   createdAt: string;
 }
 
-// Mock initial data
-const initialTickets: CoachingTicket[] = [
-  {
-    id: "t1",
-    player_id: "p1",
-    playerName: "Matador_Pro",
-    vodLink: "https://www.youtube.com/watch?v=example1",
-    goals: "Improve my utility usage in site takes.",
-    status: "Pending",
-    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-  },
-  {
-    id: "t2",
-    player_id: "p2",
-    playerName: "NoobMaster69",
-    vodLink: "https://www.youtube.com/watch?v=example2",
-    goals: "Better crosshair placement.",
-    status: "In-Progress",
-    coach_id: "c1",
-    coachName: "Coach K",
-    createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-  }
-];
-
 export function useTickets() {
   const { addNotification } = useNotifications();
-  const [tickets, setTickets] = useState<CoachingTicket[]>(() => {
-    const saved = localStorage.getItem("coaching_tickets");
-    return saved ? JSON.parse(saved) : initialTickets;
-  });
+  const [tickets, setTickets] = useState<CoachingTicket[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem("coaching_tickets", JSON.stringify(tickets));
-  }, [tickets]);
-
-  const createTicket = (ticket: Omit<CoachingTicket, "id" | "status" | "createdAt">) => {
-    const newTicket: CoachingTicket = {
-      ...ticket,
-      id: `t${Date.now()}`,
-      status: "Pending",
-      createdAt: new Date().toISOString(),
-    };
-    setTickets((prev) => [newTicket, ...prev]);
+    const q = query(collection(db, "tickets"), orderBy("createdAt", "desc"));
     
-    addNotification(
-      "ticket",
-      "New Coaching Request",
-      `${newTicket.playerName} submitted a new VOD for review.`,
-      "/dashboard/coach-terminal"
-    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedTickets = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          ...data,
+          // Convert Firestore Timestamp to ISO string if needed
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : data.createdAt
+        } as CoachingTicket;
+      });
+      setTickets(fetchedTickets);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching tickets:", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const createTicket = async (ticket: Omit<CoachingTicket, "id" | "status" | "createdAt">) => {
+    try {
+      const newTicket = {
+        ...ticket,
+        status: "Pending" as TicketStatus,
+        createdAt: Timestamp.now(),
+      };
+      
+      await addDoc(collection(db, "tickets"), newTicket);
+      
+      addNotification(
+        "ticket",
+        "New Coaching Request",
+        `${ticket.playerName} submitted a new VOD for review.`,
+        "/dashboard/coach-terminal"
+      );
+    } catch (error) {
+      console.error("Error creating ticket:", error);
+    }
   };
 
-  const updateTicketStatus = (ticketId: string, status: TicketStatus, annotatedVodUrl?: string) => {
-    setTickets((prev) =>
-      prev.map((t) => {
-        if (t.id === ticketId) {
-          const updated = { ...t, status, annotatedVodUrl: annotatedVodUrl || t.annotatedVodUrl };
+  const updateTicketStatus = async (ticketId: string, status: TicketStatus, annotatedVodUrl?: string) => {
+    try {
+      const ticketRef = doc(db, "tickets", ticketId);
+      const updateData: any = { status };
+      if (annotatedVodUrl) updateData.annotatedVodUrl = annotatedVodUrl;
 
-          if (status === "Completed") {
-            addNotification(
-              "ticket",
-              "Coaching Review Ready",
-              "Your VOD has been reviewed! Click to view feedback.",
-              "/dashboard/player-terminal"
-            );
-          } else if (status === "In-Progress") {
-            addNotification(
-              "system",
-              "Review Started",
-              `A coach has started analyzing your VOD.`
-            );
-          }
-          return updated;
-        }
-        return t;
-      })
-    );
+      await updateDoc(ticketRef, updateData);
+
+      if (status === "Completed") {
+        addNotification(
+          "ticket",
+          "Coaching Review Ready",
+          "Your VOD has been reviewed! Click to view feedback.",
+          "/dashboard/path-to-pro"
+        );
+      } else if (status === "In-Progress") {
+        addNotification(
+          "system",
+          "Review Started",
+          `A coach has started analyzing your VOD.`
+        );
+      }
+    } catch (error) {
+      console.error("Error updating ticket status:", error);
+    }
   };
 
-  const assignCoach = (ticketId: string, coachId: string, coachName: string) => {
-    setTickets((prev) =>
-      prev.map((t) =>
-        t.id === ticketId ? { ...t, coach_id: coachId, coachName, status: "Assigned" } : t
-      )
-    );
+  const assignCoach = async (ticketId: string, coachId: string, coachName: string) => {
+    try {
+      const ticketRef = doc(db, "tickets", ticketId);
+      await updateDoc(ticketRef, {
+        coach_id: coachId,
+        coachName: coachName,
+        status: "Assigned" as TicketStatus
+      });
+    } catch (error) {
+      console.error("Error assigning coach:", error);
+    }
   };
 
-  return { tickets, createTicket, updateTicketStatus, assignCoach };
+  return { tickets, createTicket, updateTicketStatus, assignCoach, loading };
 }
+
