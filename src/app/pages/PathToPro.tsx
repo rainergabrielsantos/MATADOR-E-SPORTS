@@ -2,8 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { PathToProTracker } from "../components/PathToProTracker";
 import { PageHeader } from "../components/PageHeader";
-import { Swords, ChevronDown, ChevronUp, Clock, BookOpen, Star } from "lucide-react";
+import { Swords, ChevronDown, ChevronUp, Clock, BookOpen, Star, MessageSquare, ExternalLink } from "lucide-react";
 import { Badge } from "../components/ui/badge";
+import { CoachingTicketForm } from "../components/CoachingTicketForm";
+import { useTickets } from "../hooks/useTickets";
+import { useAuth } from "../hooks/useAuth";
 
 interface Milestone {
   id: string;
@@ -64,35 +67,77 @@ const milestones: Milestone[] = [
   },
 ];
 
-const recentActivity = [
-  { time: "3 days ago", action: "Logged Valorant stats — Diamond 3" },
-  { time: "1 week ago", action: "Joined CSUN Valorant club roster" },
-  { time: "2 weeks ago", action: "Profile created" },
-];
-
 export function PathToPro() {
+  const { user } = useAuth();
+  const { tickets } = useTickets();
   const [expandedMilestone, setExpandedMilestone] = useState<string | null>("m3");
+
+  const userTickets = tickets.filter(t => t.player_id === user?.id);
 
   function toggleMilestone(id: string) {
     setExpandedMilestone((prev) => (prev === id ? null : id));
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto min-h-full">
-      <PageHeader
-        title="The Pro Pipeline"
-        subtitle="Your structured roadmap to CSUN varsity E-Sports."
-        backTo="/dashboard"
-        backLabel="Home"
-      />
+    <div className="p-8 max-w-4xl mx-auto min-h-full space-y-8">
+      <div className="flex justify-between items-start">
+        <PageHeader
+          title="The Pro Pipeline"
+          subtitle="Your structured roadmap to CSUN varsity E-Sports."
+          backTo="/dashboard"
+          backLabel="Home"
+        />
+        <div className="pt-2">
+          <CoachingTicketForm />
+        </div>
+      </div>
+
+      {/* Active Tickets Section */}
+      {userTickets.length > 0 && (
+        <div className="bg-[#0d0d12] border border-white/10 rounded-2xl p-6 shadow-2xl">
+          <div className="flex items-center gap-2 mb-4">
+            <MessageSquare className="h-5 w-5 text-[#CE1126]" />
+            <h2 className="text-white font-semibold">Active Coaching Tickets</h2>
+          </div>
+          <div className="space-y-4">
+            {userTickets.map((ticket) => (
+              <div key={ticket.id} className="bg-white/5 border border-white/5 rounded-xl p-4 flex justify-between items-center">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-medium text-sm">Ticket #{ticket.id.slice(-4)}</span>
+                    <Badge className={
+                      ticket.status === 'Completed' ? 'bg-green-500/20 text-green-400' :
+                      ticket.status === 'In-Progress' ? 'bg-blue-500/20 text-blue-400' :
+                      'bg-yellow-500/20 text-yellow-400'
+                    }>
+                      {ticket.status}
+                    </Badge>
+                  </div>
+                  <p className="text-[#a8b2bf] text-xs line-clamp-1">{ticket.goals}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <a href={ticket.vodLink} target="_blank" rel="noreferrer" className="p-2 hover:bg-white/10 rounded-lg text-[#a8b2bf] transition-colors">
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                  {ticket.annotatedVodUrl && (
+                    <Badge variant="outline" className="border-[#CE1126] text-[#CE1126] text-xs cursor-pointer hover:bg-[#CE1126]/10">
+                      View Feedback
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Tracker */}
-      <div className="bg-[#0d0d12] border border-white/10 rounded-2xl p-8 mb-8 shadow-2xl">
+      <div className="bg-[#0d0d12] border border-white/10 rounded-2xl p-8 shadow-2xl">
         <PathToProTracker />
       </div>
 
       {/* Milestone Accordion */}
-      <div className="mb-8">
+      <div>
         <h2 className="text-xl text-white font-semibold mb-4">Milestones</h2>
         <div className="space-y-3">
           {milestones.map((m) => {
@@ -205,23 +250,6 @@ export function PathToPro() {
               </div>
             );
           })}
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div className="bg-[#0d0d12] border border-white/10 rounded-2xl p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Clock className="h-5 w-5 text-[#CE1126]" />
-          <h2 className="text-white font-semibold">Recent Activity</h2>
-        </div>
-        <div className="space-y-3">
-          {recentActivity.map((item, i) => (
-            <div key={i} className="flex items-center gap-4">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#CE1126] flex-shrink-0" />
-              <span className="text-white text-sm flex-1">{item.action}</span>
-              <span className="text-[#a8b2bf] text-xs">{item.time}</span>
-            </div>
-          ))}
         </div>
       </div>
     </div>

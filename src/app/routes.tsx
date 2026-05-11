@@ -1,5 +1,6 @@
 import { createBrowserRouter, Outlet, Navigate } from "react-router";
 import { LeftSidebar } from "./components/LeftSidebar";
+import { ProtectedRoute } from "./hooks/ProtectedRoute";
 
 import { HomeDashboard } from "./pages/HomeDashboard";
 import { PathToPro } from "./pages/PathToPro";
@@ -9,6 +10,7 @@ import { EventsPage } from "./pages/EventsPage";
 import { RosterManager } from "./pages/RosterManager";
 import { ScoutingBoard } from "./pages/ScoutingBoard";
 import { LoginPage } from "./pages/LoginPage";
+import { TeamDashboard } from "./pages/TeamDashboard";
 
 function RootLayout() {
   return (
@@ -28,14 +30,31 @@ export const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    Component: RootLayout,
+    element: (
+      <ProtectedRoute>
+        <RootLayout />
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, Component: HomeDashboard },
       { path: "path-to-pro", Component: PathToPro },
       { path: "events", Component: EventsPage },
       { path: "community", Component: CommunityPage },
       {
+        path: "team",
+        element: (
+          <ProtectedRoute allowedRoles={["Player", "Coach"]}>
+            <TeamDashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "coach-terminal",
+        element: (
+          <ProtectedRoute allowedRoles={["Coach"]}>
+            <Outlet />
+          </ProtectedRoute>
+        ),
         children: [
           { index: true, Component: CoachTerminal },
           { path: "roster", Component: RosterManager },
@@ -44,7 +63,6 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  // Redirect any unknown routes to login
   {
     path: "*",
     element: <Navigate to="/" replace />,

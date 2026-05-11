@@ -10,104 +10,20 @@ import {
   DialogTitle,
   DialogFooter,
 } from "../components/ui/dialog";
+import { useEvents } from "../hooks/useEvents";
+import { toast } from "sonner";
 
 type EventTab = "upcoming" | "scrims" | "myrsvps";
 
-interface GameEvent {
-  id: string;
-  type: "event" | "scrim";
-  title: string;
-  date: string;
-  time: string;
-  location: string;
-  game: string;
-  attendees: number;
-  maxAttendees?: number;
-  image?: string;
-  description?: string;
-}
-
-const allEvents: GameEvent[] = [
-  {
-    id: "e1",
-    type: "event",
-    title: "Spring LAN Party",
-    date: "April 15, 2026",
-    time: "6:00 PM – 11:00 PM",
-    location: "University Student Union",
-    game: "Multi-Game",
-    attendees: 87,
-    maxAttendees: 120,
-    description:
-      "CSUN's biggest LAN of the semester. Bring your peripherals and compete across 5 titles.",
-    image:
-      "https://images.unsplash.com/photo-1617507171089-6cb9aa5add36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800",
-  },
-  {
-    id: "e2",
-    type: "event",
-    title: "Rocket League Tournament",
-    date: "April 20, 2026",
-    time: "2:00 PM – 6:00 PM",
-    location: "Online",
-    game: "Rocket League",
-    attendees: 32,
-    maxAttendees: 64,
-    description:
-      "Double-elimination bracket. 3v3 format. Prizes for top 3 teams.",
-  },
-  {
-    id: "e3",
-    type: "scrim",
-    title: "Open Valorant Scrim Block",
-    date: "April 17, 2026",
-    time: "7:00 PM – 10:00 PM",
-    location: "Online (Discord)",
-    game: "Valorant",
-    attendees: 8,
-    maxAttendees: 10,
-    description:
-      "Open scrim slots for Valorant players. Diamond+ preferred but all welcome.",
-  },
-  {
-    id: "e4",
-    type: "scrim",
-    title: "League of Legends Inhouse",
-    date: "April 18, 2026",
-    time: "5:00 PM – 9:00 PM",
-    location: "Online (Discord)",
-    game: "League of Legends",
-    attendees: 14,
-    maxAttendees: 20,
-    description:
-      "Inhouse tournament for all CSUN LoL players. Sign up by 4 PM day of.",
-  },
-  {
-    id: "e5",
-    type: "event",
-    title: "CS2 Charity Cup",
-    date: "May 3, 2026",
-    time: "1:00 PM – 8:00 PM",
-    location: "Campus Recreation Center",
-    game: "CS2",
-    attendees: 45,
-    maxAttendees: 80,
-    description:
-      "Fundraiser tournament supporting CSUN student wellness programs.",
-  },
-];
-
-// Scrim join form
 const roles = ["Entry Fragger", "Support", "IGL", "AWPer", "Lurker", "Any Role"];
 
 export function EventsPage() {
+  const { events, rsvps, toggleRSVP } = useEvents();
   const [activeTab, setActiveTab] = useState<EventTab>("upcoming");
-  const [rsvpd, setRsvpd] = useState<Set<string>>(new Set());
   const [joinScrimOpen, setJoinScrimOpen] = useState(false);
-  const [selectedScrim, setSelectedScrim] = useState<GameEvent | null>(null);
+  const [selectedScrim, setSelectedScrim] = useState<any>(null);
   const [scrimRole, setScrimRole] = useState(roles[0]);
   const [scrimIgName, setScrimIgName] = useState("");
-  const [joinedScrims, setJoinedScrims] = useState<Set<string>>(new Set());
 
   const tabs: { id: EventTab; label: string }[] = [
     { id: "upcoming", label: "Upcoming Events" },
@@ -115,43 +31,42 @@ export function EventsPage() {
     { id: "myrsvps", label: "My RSVPs" },
   ];
 
-  const filtered = allEvents.filter((e) => {
-    if (activeTab === "upcoming") return e.type === "event";
-    if (activeTab === "scrims") return e.type === "scrim";
-    if (activeTab === "myrsvps") return rsvpd.has(e.id) || joinedScrims.has(e.id);
+  const filtered = events.filter((e) => {
+    const isRsvpd = rsvps.includes(e.id);
+    if (activeTab === "myrsvps") return isRsvpd;
+    // For this demo, let's say Scrims are events with "Scrim" in the title or a specific property
+    // Since our hook has a simple structure, I'll filter by title content
+    const isScrim = e.title.toLowerCase().includes("scrim") || e.title.toLowerCase().includes("tryout");
+    if (activeTab === "upcoming") return !isScrim;
+    if (activeTab === "scrims") return isScrim;
     return true;
   });
 
-  function toggleRsvp(id: string) {
-    setRsvpd((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
+  const handleToggleRsvp = (eventId: string) => {
+    toggleRSVP(eventId);
+    const isJoining = !rsvps.includes(eventId);
+    if (isJoining) {
+      toast.success("RSVP confirmed! See you there.");
+    } else {
+      toast.info("RSVP cancelled.");
+    }
+  };
 
-  function openJoinScrim(event: GameEvent) {
+  const openJoinScrim = (event: any) => {
     setSelectedScrim(event);
     setScrimRole(roles[0]);
     setScrimIgName("");
     setJoinScrimOpen(true);
-  }
+  };
 
-  function handleJoinScrim() {
+  const handleJoinScrim = () => {
     if (!selectedScrim) return;
-    // TODO: replace with API call
-    console.log("Join scrim:", { scrim: selectedScrim.id, role: scrimRole, igName: scrimIgName });
-    setJoinedScrims((prev) => {
-      const next = new Set(prev);
-      next.add(selectedScrim.id);
-      return next;
-    });
+    toggleRSVP(selectedScrim.id);
+    toast.success(`Joined scrim as ${scrimRole}!`);
     setJoinScrimOpen(false);
-  }
+  };
 
-  const capacityColor = (attending: number, max?: number) => {
-    if (!max) return "#a8b2bf";
+  const capacityColor = (attending: number, max: number = 100) => {
     const pct = attending / max;
     if (pct >= 0.9) return "#ef4444";
     if (pct >= 0.7) return "#f59e0b";
@@ -159,7 +74,7 @@ export function EventsPage() {
   };
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-8 max-w-6xl mx-auto space-y-8">
       <PageHeader
         title="Events & Scrimmages"
         subtitle="RSVP to campus events and join open scrim blocks."
@@ -168,11 +83,10 @@ export function EventsPage() {
       />
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2">
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            id={`events-tab-${tab.id}`}
             onClick={() => setActiveTab(tab.id)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeTab === tab.id
@@ -181,225 +95,165 @@ export function EventsPage() {
             }`}
           >
             {tab.label}
-            {tab.id === "myrsvps" && rsvpd.size + joinedScrims.size > 0 && (
+            {tab.id === "myrsvps" && rsvps.length > 0 && (
               <span className="ml-2 bg-white/20 text-white text-xs rounded-full px-1.5 py-0.5">
-                {rsvpd.size + joinedScrims.size}
+                {rsvps.length}
               </span>
             )}
           </button>
         ))}
       </div>
 
-      {/* Event Cards */}
-      {filtered.length === 0 && (
-        <div className="text-center py-16">
-          <Calendar className="h-10 w-10 text-[#a8b2bf] mx-auto mb-4" />
-          <p className="text-white font-semibold mb-1">No items here yet</p>
-          <p className="text-[#a8b2bf] text-sm">
-            {activeTab === "myrsvps"
-              ? "RSVP to events or join a scrim to see them here."
-              : "Check back soon!"}
-          </p>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {/* Event Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filtered.map((event) => {
-          const isRsvpd = rsvpd.has(event.id);
-          const isJoined = joinedScrims.has(event.id);
-          const capColor = capacityColor(event.attendees, event.maxAttendees);
+          const isRsvpd = rsvps.includes(event.id);
+          const isScrim = event.title.toLowerCase().includes("scrim") || event.title.toLowerCase().includes("tryout");
+          const maxAttendees = isScrim ? 10 : 120;
+          const capColor = capacityColor(event.attendeesCount, maxAttendees);
 
           return (
             <div
               key={event.id}
-              className="group bg-[#0d0d12] border border-white/10 rounded-xl overflow-hidden hover:border-[#CE1126]/40 transition-all"
+              className="group bg-[#131318] border border-white/10 rounded-2xl overflow-hidden hover:border-[#CE1126]/50 transition-all flex flex-col"
             >
               {event.image && (
-                <div className="h-36 overflow-hidden">
+                <div className="h-40 overflow-hidden relative">
                   <img
                     src={event.image}
                     alt={event.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                </div>
-              )}
-
-              <div className="p-5">
-                {/* Title + game badge */}
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-white font-semibold group-hover:text-[#CE1126] transition-colors pr-2">
-                    {event.title}
-                  </h3>
-                  <Badge className="bg-[#CE1126]/20 text-[#CE1126] hover:bg-[#CE1126]/30 text-xs flex-shrink-0">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#131318] to-transparent opacity-60" />
+                  <Badge className="absolute top-3 right-3 bg-[#CE1126] text-white border-none">
                     {event.game}
                   </Badge>
                 </div>
+              )}
 
-                {/* Meta info */}
-                <div className="space-y-1.5 text-sm text-[#a8b2bf] mb-4">
+              <div className="p-5 flex-1 flex flex-col space-y-4">
+                <h3 className="text-lg font-bold text-white group-hover:text-[#CE1126] transition-colors">
+                  {event.title}
+                </h3>
+
+                <div className="space-y-2 text-xs text-[#a8b2bf]">
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-3.5 w-3.5 flex-shrink-0" />
-                    <span>
-                      {event.date} · {event.time}
-                    </span>
+                    <Calendar className="h-3.5 w-3.5 text-[#CE1126]" />
+                    <span>{event.date} · {event.time}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+                    <MapPin className="h-3.5 w-3.5 text-[#CE1126]" />
                     <span>{event.location}</span>
                   </div>
                 </div>
 
-                {event.description && (
-                  <p className="text-[#a8b2bf] text-xs mb-4 leading-relaxed">
-                    {event.description}
-                  </p>
-                )}
+                <p className="text-xs text-[#a8b2bf] leading-relaxed flex-1 italic">
+                  {event.description}
+                </p>
 
-                {/* Capacity bar */}
-                {event.maxAttendees && (
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <div className="flex items-center gap-1 text-[#a8b2bf]">
-                        <Users className="h-3 w-3" />
-                        <span>{event.attendees} / {event.maxAttendees} spots</span>
-                      </div>
-                      <span style={{ color: capColor }} className="font-medium">
-                        {Math.round((event.attendees / event.maxAttendees) * 100)}% full
-                      </span>
-                    </div>
-                    <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{
-                          width: `${(event.attendees / event.maxAttendees) * 100}%`,
-                          backgroundColor: capColor,
-                        }}
-                      />
-                    </div>
+                {/* Capacity */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
+                    <span className="text-[#a8b2bf]">Capacity</span>
+                    <span style={{ color: capColor }}>{event.attendeesCount} / {maxAttendees} Spots</span>
                   </div>
-                )}
+                  <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full rounded-full transition-all duration-1000"
+                      style={{ 
+                        width: `${Math.min((event.attendeesCount / maxAttendees) * 100, 100)}%`,
+                        backgroundColor: capColor 
+                      }}
+                    />
+                  </div>
+                </div>
 
-                {/* Action button */}
-                {event.type === "event" && (
-                  <button
-                    id={`rsvp-${event.id}`}
-                    onClick={() => toggleRsvp(event.id)}
-                    className={`w-full py-2.5 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${
-                      isRsvpd
-                        ? "bg-green-600/20 text-green-400 border border-green-600/30 hover:bg-red-900/20 hover:text-red-400 hover:border-red-600/30"
-                        : "bg-[#CE1126] hover:bg-[#CE1126]/90 text-white"
-                    }`}
-                  >
-                    {isRsvpd ? (
-                      <>
-                        <CheckCircle2 className="h-4 w-4" />
-                        RSVP'd — Click to Cancel
-                      </>
-                    ) : (
-                      <>
-                        <Circle className="h-4 w-4" />
-                        RSVP
-                      </>
-                    )}
-                  </button>
-                )}
-
-                {event.type === "scrim" && (
-                  <button
-                    id={`join-scrim-${event.id}`}
-                    onClick={() =>
-                      isJoined ? null : openJoinScrim(event)
-                    }
-                    disabled={isJoined}
-                    className={`w-full py-2.5 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${
-                      isJoined
-                        ? "bg-green-600/20 text-green-400 border border-green-600/30 cursor-default"
-                        : "bg-white/10 hover:bg-[#CE1126] text-white border border-white/20 hover:border-[#CE1126]"
-                    }`}
-                  >
-                    {isJoined ? (
-                      <>
-                        <CheckCircle2 className="h-4 w-4" />
-                        Joined
-                      </>
-                    ) : (
-                      <>
-                        <Swords className="h-4 w-4" />
-                        Join Scrim
-                      </>
-                    )}
-                  </button>
-                )}
+                <Button
+                  onClick={() => isScrim ? (isRsvpd ? handleToggleRsvp(event.id) : openJoinScrim(event)) : handleToggleRsvp(event.id)}
+                  className={`w-full h-11 gap-2 ${
+                    isRsvpd 
+                      ? "bg-white/5 hover:bg-red-500/20 text-white border border-white/10 hover:border-red-500/50" 
+                      : "bg-[#CE1126] hover:bg-[#CE1126]/90 text-white"
+                  }`}
+                >
+                  {isRsvpd ? (
+                    <>
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      RSVP'd (Cancel)
+                    </>
+                  ) : (
+                    <>
+                      {isScrim ? <Swords className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                      {isScrim ? "Join Scrim" : "RSVP Now"}
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
           );
         })}
       </div>
 
+      {filtered.length === 0 && (
+        <div className="text-center py-20 bg-white/[0.02] rounded-3xl border border-dashed border-white/10">
+          <Calendar className="h-12 w-12 text-white/10 mx-auto mb-4" />
+          <p className="text-[#a8b2bf] font-medium">No events found in this category.</p>
+        </div>
+      )}
+
       {/* Join Scrim Dialog */}
       <Dialog open={joinScrimOpen} onOpenChange={setJoinScrimOpen}>
-        <DialogContent className="bg-[#0d0d12] border border-white/10 text-white max-w-md">
+        <DialogContent className="bg-[#131318] border-white/10 text-white max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-white text-xl">
-              Join Scrim: {selectedScrim?.title}
+            <DialogTitle className="text-2xl font-bold uppercase italic">
+              Join <span className="text-[#CE1126]">Scrim</span>
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4 py-2">
-            <div>
-              <label htmlFor="scrim-role" className="block text-sm text-[#a8b2bf] mb-1.5">
-                Your Role
-              </label>
-              <select
-                id="scrim-role"
-                value={scrimRole}
-                onChange={(e) => setScrimRole(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#CE1126]/50 transition-colors"
-              >
-                {roles.map((r) => (
-                  <option key={r} value={r} className="bg-[#0d0d12]">
-                    {r}
-                  </option>
-                ))}
-              </select>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-[#a8b2bf] uppercase">Selected Scrim</label>
+              <div className="p-3 bg-white/5 border border-white/10 rounded-lg text-sm">
+                {selectedScrim?.title}
+              </div>
             </div>
 
-            <div>
-              <label htmlFor="scrim-igname" className="block text-sm text-[#a8b2bf] mb-1.5">
-                In-Game Name / Tag
-              </label>
-              <input
-                id="scrim-igname"
-                type="text"
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-[#a8b2bf] uppercase">Your Role</label>
+              <Select value={scrimRole} onValueChange={setScrimRole}>
+                <SelectTrigger className="bg-white/5 border-white/10 h-11">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#131318] border-white/10 text-white">
+                  {roles.map((r) => (
+                    <SelectItem key={r} value={r}>{r}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-[#a8b2bf] uppercase">In-Game Name / Tag</label>
+              <Input
                 placeholder="e.g. MatadorX#1234"
                 value={scrimIgName}
                 onChange={(e) => setScrimIgName(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-white/30 text-sm focus:outline-none focus:border-[#CE1126]/50 transition-colors"
+                className="bg-white/5 border-white/10 h-11"
+                required
               />
-            </div>
-
-            <div className="bg-white/5 rounded-lg p-3 text-xs text-[#a8b2bf]">
-              <p className="font-medium text-white mb-1">What happens next?</p>
-              <p>You'll be added to the scrim roster. Check Discord for the lobby code closer to the event time.</p>
             </div>
           </div>
 
-          <DialogFooter className="gap-2">
-            <Button
-              variant="outline"
-              className="bg-white/5 border-white/10 text-[#a8b2bf] hover:bg-white/10 hover:text-white"
-              onClick={() => setJoinScrimOpen(false)}
-            >
+          <DialogFooter className="pt-6">
+            <Button variant="ghost" onClick={() => setJoinScrimOpen(false)} className="text-white hover:bg-white/5">
               Cancel
             </Button>
             <Button
-              id="confirm-join-scrim-btn"
-              className="bg-[#CE1126] hover:bg-[#CE1126]/90 text-white"
               onClick={handleJoinScrim}
+              className="bg-[#CE1126] hover:bg-[#CE1126]/90 text-white px-8"
               disabled={!scrimIgName.trim()}
             >
-              <Plus className="h-4 w-4 mr-1" />
-              Confirm Join
+              Confirm Entry
             </Button>
           </DialogFooter>
         </DialogContent>

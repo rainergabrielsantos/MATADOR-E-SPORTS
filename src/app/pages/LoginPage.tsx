@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Shield, Lock, User, ArrowRight } from "lucide-react";
+import { Shield, Lock, User, ArrowRight, UserCircle } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { useAuth, Role } from "../hooks/useAuth";
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [csunId, setCsunId] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState<Role>("Member");
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock login logic
     if (csunId && password) {
+      login(csunId, role);
       navigate("/dashboard");
     }
   };
@@ -29,7 +32,7 @@ export function LoginPage() {
       </div>
 
       {/* Content Container */}
-      <div className="relative z-10 w-full max-w-md px-6">
+      <div className="relative z-10 w-full max-w-md px-6 py-12">
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center p-4 bg-[#CE1126] rounded-2xl mb-6 shadow-2xl shadow-[#CE1126]/40 animate-bounce-subtle">
             <Shield className="h-10 w-10 text-white" />
@@ -59,6 +62,26 @@ export function LoginPage() {
                   placeholder="012345678"
                   required
                 />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#a8b2bf] mb-2 px-1">
+                Access Level (Test)
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#a8b2bf] group-focus-within:text-[#CE1126] transition-colors">
+                  <UserCircle className="h-5 w-5" />
+                </div>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value as Role)}
+                  className="block w-full pl-10 pr-3 py-3 bg-white/5 border border-white/10 rounded-xl text-white appearance-none focus:outline-none focus:ring-2 focus:ring-[#CE1126]/50 focus:border-transparent transition-all [&>option]:bg-[#131318] [&>option]:text-white"
+                >
+                  <option value="Member">Member</option>
+                  <option value="Player">Player</option>
+                  <option value="Coach">Coach</option>
+                </select>
               </div>
             </div>
 
