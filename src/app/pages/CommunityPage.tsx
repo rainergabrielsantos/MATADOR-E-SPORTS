@@ -19,7 +19,7 @@ type FeedType = "all" | "lfg" | "streams";
 
 export function CommunityPage() {
   const { user } = useAuth();
-  const { posts, createLFG, deleteLFG } = useLFG();
+  const { posts, createLFG, deleteLFG, loading } = useLFG();
   const [activeTab, setActiveTab] = useState<FeedType>("all");
   const [lfgDialogOpen, setLfgDialogOpen] = useState(false);
   
@@ -43,10 +43,10 @@ export function CommunityPage() {
     return true;
   });
 
-  const handlePostLfg = (e: React.FormEvent) => {
+  const handlePostLfg = async (e: React.FormEvent) => {
     e.preventDefault();
     if (user) {
-      createLFG(
+      await createLFG(
         {
           game: lfgForm.game,
           rank: lfgForm.rank,
@@ -61,6 +61,14 @@ export function CommunityPage() {
       setLfgForm({ game: "", rank: "", intent: "Casual", description: "", playersNeeded: 5 });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[500px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#CE1126]"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8">

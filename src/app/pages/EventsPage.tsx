@@ -11,6 +11,7 @@ import {
   DialogFooter,
 } from "../components/ui/dialog";
 import { useEvents } from "../hooks/useEvents";
+import { useAuth } from "../hooks/useAuth";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Input } from "../components/ui/input";
@@ -20,12 +21,21 @@ type EventTab = "upcoming" | "scrims" | "myrsvps";
 const roles = ["Entry Fragger", "Support", "IGL", "AWPer", "Lurker", "Any Role"];
 
 export function EventsPage() {
-  const { events, rsvps, toggleRSVP } = useEvents();
+  const { user } = useAuth();
+  const { events, rsvps, toggleRSVP, loading } = useEvents(user?.id);
   const [activeTab, setActiveTab] = useState<EventTab>("upcoming");
   const [joinScrimOpen, setJoinScrimOpen] = useState(false);
   const [selectedScrim, setSelectedScrim] = useState<any>(null);
   const [scrimRole, setScrimRole] = useState(roles[0]);
   const [scrimIgName, setScrimIgName] = useState("");
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[500px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#CE1126]"></div>
+      </div>
+    );
+  }
 
   const tabs: { id: EventTab; label: string }[] = [
     { id: "upcoming", label: "Upcoming Events" },

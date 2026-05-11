@@ -1,4 +1,15 @@
 import { useState, useEffect } from "react";
+import { db } from "../../lib/firebase";
+import { 
+  collection, 
+  addDoc, 
+  deleteDoc, 
+  doc, 
+  onSnapshot, 
+  query, 
+  orderBy, 
+  Timestamp 
+} from "firebase/firestore";
 
 export type LFGIntent = "Casual" | "Competitive";
 
@@ -15,58 +26,54 @@ export interface LFGPost {
   createdAt: string;
 }
 
-const initialLFG: LFGPost[] = [
-  {
-    id: "l1",
-    authorId: "u1",
-    authorName: "RedMatador",
-    game: "Valorant",
-    rank: "Diamond 2",
-    intent: "Competitive",
-    description: "Looking for Support / Sentinel for Premier grind.",
-    playersNeeded: 5,
-    playersCurrent: 3,
-    createdAt: new Date(Date.now() - 3600000).toISOString(),
-  },
-  {
-    id: "l2",
-    authorId: "u2",
-    authorName: "MatadorGG",
-    game: "League of Legends",
-    rank: "Gold 1",
-    intent: "Casual",
-    description: "Just for fun normals, need a jungle main.",
-    playersNeeded: 5,
-    playersCurrent: 4,
-    createdAt: new Date(Date.now() - 7200000).toISOString(),
-  }
-];
-
 export function useLFG() {
-  const [posts, setPosts] = useState<LFGPost[]>(() => {
-    const saved = localStorage.getItem("matador_lfg");
-    return saved ? JSON.parse(saved) : initialLFG;
-  });
+  const [posts, setPosts] = useState<LFGPost[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem("matador_lfg", JSON.stringify(posts));
-  }, [posts]);
+    const q = query(collection(db, "lfg_posts"), orderBy("createdAt", "desc"));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetched = snapshot.docs.map(docSnap => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          ...data,
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : data.createdAt
+        } as LFGPost;
+      });
+      setPosts(fetched);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching LFG posts:", error);
+      setLoading(false);
+    });
 
-  const createLFG = (post: Omit<LFGPost, "id" | "authorId" | "authorName" | "playersCurrent" | "createdAt">, authorId: string, authorName: string) => {
-    const newPost: LFGPost = {
-      ...post,
-      id: `l${Date.now()}`,
-      authorId,
-      authorName,
-      playersCurrent: 1,
-      createdAt: new Date().toISOString(),
-    };
-    setPosts((prev) => [newPost, ...prev]);
+    return () => unsubscribe();
+  }, []);
+
+  const createLFG = async (post: Omit<LFGPost, "id" | "authorId" | "authorName" | "playersCurrent" | "createdAt">, authorId: string, authorName: string) => {
+    try {
+      await addDoc(collection(db, "lfg_posts"), {
+        ...post,
+        authorId,
+        authorName,
+        playersCurrent: 1,
+        createdAt: Timestamp.now(),
+      });
+    } catch (error) {
+      console.error("Error creating LFG post:", error);
+    }
   };
 
-  const deleteLFG = (id: string) => {
-    setPosts((prev) => prev.filter((p) => p.id !== id));
+  const deleteLFG = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "lfg_posts", id));
+    } catch (error) {
+      console.error("Error deleting LFG post:", error);
+    }
   };
 
-  return { posts, createLFG, deleteLFG };
+  return { posts, createLFG, deleteLFG, loading };
 }
+
