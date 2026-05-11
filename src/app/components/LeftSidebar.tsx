@@ -47,13 +47,13 @@ export function LeftSidebar() {
 
         <div className="flex items-center gap-3">
           <Avatar className="h-14 w-14 ring-2 ring-[#CE1126]">
-            <AvatarImage src={user?.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=Matador"} />
+            <AvatarImage src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username || 'Matador'}`} />
             <AvatarFallback>{user?.username?.[0] || 'M'}</AvatarFallback>
           </Avatar>
           <div>
             <div className="flex items-center gap-2">
               <p className="text-white font-bold tracking-tight">{user?.username || 'Guest'}</p>
-              <Badge className="bg-[#CE1126]/20 text-[#CE1126] hover:bg-[#CE1126]/20 text-[10px] border border-[#CE1126]/20">
+              <Badge className="bg-[#CE1126]/20 text-[#CE1126] hover:bg-[#CE1126]/20 text-[10px] border border-[#CE1126]/20 uppercase">
                 {user?.role || 'Member'}
               </Badge>
             </div>
@@ -90,14 +90,14 @@ export function LeftSidebar() {
         ))}
 
         {/* Team Hub (For Players/Coaches) */}
-        {(user?.role === 'Player' || user?.role === 'Coach') && (
+        {user?.role !== 'Member' && (
           <NavLink
-            to={teamItem.path}
+            to="/dashboard/team"
             id="nav-team-dashboard"
             className={linkClass}
           >
-            <teamItem.icon className="h-5 w-5 flex-shrink-0" />
-            <span className="flex-1 text-left text-sm font-medium">{teamItem.label}</span>
+            <Shield className="h-5 w-5 flex-shrink-0" />
+            <span className="flex-1 text-left text-sm font-medium">Team Dashboard</span>
             <Badge variant="outline" className="text-[8px] uppercase border-blue-500/50 text-blue-400 font-black">
               Private
             </Badge>

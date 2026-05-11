@@ -1,13 +1,16 @@
 import { RouterProvider } from "react-router";
 import { router } from "./routes";
 import { AuthProvider } from "./hooks/useAuth";
+import { NotificationProvider } from "./context/NotificationContext";
 import { Toaster } from "./components/ui/sonner";
 
 export default function App() {
   return (
     <AuthProvider>
-      <RouterProvider router={router} />
-      <Toaster />
+      <NotificationProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </NotificationProvider>
     </AuthProvider>
   );
 }
