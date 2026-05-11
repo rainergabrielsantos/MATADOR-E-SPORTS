@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNotifications } from "./useNotifications";
 
 export type TicketStatus = "Pending" | "Assigned" | "In-Progress" | "Completed";
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNotifications } from "./useNotifications";
 
 export interface TeamMember {
   id: string;
@@ -68,6 +69,7 @@ const initialMatches: TeamMatch[] = [
 ];
 
 export function useTeam() {
+  const { addNotification } = useNotifications();
   const [roster] = useState<TeamMember[]>(initialRoster);
   const [announcements, setAnnouncements] = useState<TeamAnnouncement[]>(() => {
     const saved = localStorage.getItem("matador_team_announcements");
@@ -88,6 +90,13 @@ export function useTeam() {
       createdAt: new Date().toISOString(),
     };
     setAnnouncements((prev) => [newAnnouncement, ...prev]);
+
+    addNotification(
+      "announcement",
+      `New Announcement: ${title}`,
+      content.length > 40 ? content.slice(0, 37) + "..." : content,
+      "/dashboard/team"
+    );
   };
 
   return { roster, announcements, matches, addAnnouncement };

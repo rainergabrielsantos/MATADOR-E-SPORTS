@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNotifications } from "./useNotifications";
 
 export interface Message {
   id: string;
@@ -10,6 +11,7 @@ export interface Message {
 }
 
 export function useMessages() {
+  const { addNotification } = useNotifications();
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem("matador_messages");
     return saved ? JSON.parse(saved) : [];
@@ -29,6 +31,14 @@ export function useMessages() {
       createdAt: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, newMessage]);
+
+    // Notify recipient (scoping is handled by the component, but we trigger the global alert)
+    addNotification(
+      "message",
+      `Message from ${senderName}`,
+      content.length > 40 ? content.slice(0, 37) + "..." : content,
+      "/dashboard/team"
+    );
   };
 
   const getConversation = (userId1: string, userId2: string) => {

@@ -10,11 +10,13 @@ export function LeftSidebar() {
   const { user, logout } = useAuth();
   
   const navItems = [
-    { icon: Home,   label: "Community Lounge",    path: "/dashboard" },
+    { icon: Home,   label: "Home Dashboard",      path: "/dashboard" },
     { icon: Trophy, label: "The Pro Pipeline",     path: "/dashboard/path-to-pro" },
     { icon: Users,  label: "Community Hub",        path: "/dashboard/community" },
     { icon: Swords, label: "Events & Scrimmages",  path: "/dashboard/events" },
   ];
+
+  const teamItem = { icon: Shield, label: "Team Dashboard", path: "/dashboard/team" };
 
   const staffItems = [
     { icon: Shield, label: "Coach's Terminal", path: "/dashboard/coach-terminal" },
@@ -78,7 +80,7 @@ export function LeftSidebar() {
           <NavLink
             key={item.label}
             to={item.path}
-            end={item.path === "/"}
+            end={item.path === "/dashboard"}
             id={`nav-${item.label.replace(/\s+/g, "-").toLowerCase()}`}
             className={linkClass}
           >
@@ -86,6 +88,21 @@ export function LeftSidebar() {
             <span className="flex-1 text-left text-sm font-medium">{item.label}</span>
           </NavLink>
         ))}
+
+        {/* Team Hub (For Players/Coaches) */}
+        {(user?.role === 'Player' || user?.role === 'Coach') && (
+          <NavLink
+            to={teamItem.path}
+            id="nav-team-dashboard"
+            className={linkClass}
+          >
+            <teamItem.icon className="h-5 w-5 flex-shrink-0" />
+            <span className="flex-1 text-left text-sm font-medium">{teamItem.label}</span>
+            <Badge variant="outline" className="text-[8px] uppercase border-blue-500/50 text-blue-400 font-black">
+              Private
+            </Badge>
+          </NavLink>
+        )}
 
         {/* Staff Tools Divider */}
         {user?.role === 'Coach' && (
