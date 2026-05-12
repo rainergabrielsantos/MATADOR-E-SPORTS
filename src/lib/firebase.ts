@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
@@ -12,8 +12,23 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-const app = initializeApp(firebaseConfig);
+export let app: any = null;
+export let auth: any = null;
+export let db: any = null;
+export let storage: any = null;
+export let isFirebaseInitialized = false;
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+try {
+  if (!getApps().length) {
+    app = initializeApp(firebaseConfig);
+  } else {
+    app = getApp();
+  }
+  auth = getAuth(app);
+  db = getFirestore(app);
+  storage = getStorage(app);
+  isFirebaseInitialized = true;
+} catch (error) {
+  console.error("Firebase initialization error. Make sure Vercel environment variables are set correctly.", error);
+  isFirebaseInitialized = false;
+}
