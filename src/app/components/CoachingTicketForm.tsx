@@ -6,7 +6,7 @@ import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
 import { useAuth } from "../hooks/useAuth";
 import { useTickets } from "../hooks/useTickets";
-import { Video, Target, Send, Gamepad2, HelpCircle } from "lucide-react";
+import { Clapperboard, Target, Send, Gamepad2, HelpCircle } from "lucide-react";
 import { toast } from "sonner";
 
 const SUPPORTED_GAMES = ["Valorant", "League of Legends", "Overwatch 2", "Rocket League"];
@@ -44,7 +44,7 @@ export function CoachingTicketForm() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="bg-[#CE1126] hover:bg-[#CE1126]/90 text-white gap-2 shadow-lg shadow-[#CE1126]/20 px-8 h-12 rounded-xl font-black uppercase tracking-widest text-xs">
-          <Video className="h-4 w-4" />
+          <Clapperboard className="h-4 w-4" />
           Initiate Review
         </Button>
       </DialogTrigger>
@@ -96,7 +96,7 @@ export function CoachingTicketForm() {
           <div className="space-y-2">
             <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Media Source (VOD Link)</Label>
             <div className="relative group">
-              <Video className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-[#CE1126] transition-colors" />
+              <Clapperboard className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-[#CE1126] transition-colors" />
               <Input
                 placeholder="YouTube or Twitch URL"
                 value={vodLink}

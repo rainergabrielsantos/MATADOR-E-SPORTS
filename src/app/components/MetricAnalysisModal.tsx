@@ -8,7 +8,7 @@ import {
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { 
-  Video, 
+  Clapperboard, 
   FileText, 
   BarChart3, 
   Save, 
@@ -116,7 +116,7 @@ export function MetricAnalysisModal({ ticket, isOpen, onClose, onSave, isSaving 
 
           <div className="flex items-center gap-4 bg-white/5 p-2 rounded-2xl border border-white/10">
             {[
-              { id: "vod", icon: Video, label: "VOD Review" },
+              { id: "vod", icon: Clapperboard, label: "VOD Review" },
               { id: "notes", icon: FileText, label: "Coach Notes" },
               { id: "rubric", icon: BarChart3, label: "Skill Rubric" }
             ].map(tab => (
@@ -153,7 +153,7 @@ export function MetricAnalysisModal({ ticket, isOpen, onClose, onSave, isSaving 
                   </div>
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center bg-white/5 rounded-3xl border border-dashed border-white/10 space-y-4">
-                    <Video className="h-16 w-16 text-white/5" />
+                    <Clapperboard className="h-16 w-16 text-white/5" />
                     <p className="text-white/40 font-black uppercase tracking-widest text-sm">No VOD Link Provided</p>
                   </div>
                 )}

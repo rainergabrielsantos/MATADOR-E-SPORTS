@@ -7,7 +7,7 @@ import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { 
-  Video, 
+  Clapperboard, 
   Target, 
   Send, 
   Gamepad2, 
@@ -116,7 +116,7 @@ export function ProPipelineSubmission() {
             <div className="space-y-3">
               <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 ml-2">Raw Data Feed (VOD Link)</Label>
               <div className="relative group">
-                <Video className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within:text-[#CE1126] transition-all" />
+                <Clapperboard className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within:text-[#CE1126] transition-all" />
                 <Input
                   placeholder="https://www.youtube.com/watch?v=..."
                   value={vodLink}

@@ -30,7 +30,7 @@ import {
   Activity,
   History,
   ExternalLink,
-  Video
+  Clapperboard
 } from "lucide-react";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
@@ -130,7 +130,7 @@ export function PathToPro() {
                   onClick={() => navigate("/dashboard/pro-pipeline-submission")}
                   className="bg-[#CE1126] hover:bg-[#CE1126]/90 text-white gap-2 shadow-lg shadow-[#CE1126]/20 px-8 h-12 rounded-xl font-black uppercase tracking-widest text-xs"
                 >
-                  <Video className="h-4 w-4" />
+                  <Clapperboard className="h-4 w-4" />
                   Initiate Review
                 </Button>
               </div>
@@ -287,7 +287,7 @@ export function PathToPro() {
                         onClick={() => navigate("/dashboard/pro-pipeline-submission")}
                         className="bg-[#CE1126] hover:bg-[#CE1126]/90 text-white gap-2 shadow-lg shadow-[#CE1126]/20 px-8 h-12 rounded-xl font-black uppercase tracking-widest text-xs mx-auto"
                       >
-                        <Video className="h-4 w-4" />
+                        <Clapperboard className="h-4 w-4" />
                         Initiate Review
                       </Button>
                    </div>

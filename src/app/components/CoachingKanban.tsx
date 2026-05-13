@@ -2,7 +2,7 @@ import { useTickets, CoachingTicket, TicketStatus } from "../hooks/useTickets";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { Video, User, CheckCircle, ArrowRight, MessageCircle, ExternalLink } from "lucide-react";
+import { Clapperboard, User, CheckCircle, ArrowRight, MessageCircle, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "./ui/dialog";
 import { Input } from "./ui/input";
@@ -88,7 +88,7 @@ export function CoachingKanban() {
                   </CardHeader>
                   <CardContent className="p-4 pt-2 space-y-4">
                     <div className="flex items-center gap-2 text-xs text-white/60 bg-white/5 p-2 rounded-lg truncate">
-                      <Video className="h-3 w-3 text-[#CE1126]" />
+                      <Clapperboard className="h-3 w-3 text-[#CE1126]" />
                       {ticket.vodLink}
                     </div>
                     
