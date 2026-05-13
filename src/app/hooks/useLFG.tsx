@@ -3,6 +3,7 @@ import { db } from "../../lib/firebase";
 import { 
   collection, 
   addDoc, 
+  updateDoc,
   deleteDoc, 
   doc, 
   onSnapshot, 
@@ -12,17 +13,19 @@ import {
 } from "firebase/firestore";
 
 export type LFGIntent = "Casual" | "Competitive";
+export type LFGStatus = "Looking" | "In-Game & Looking" | "End Party";
 
 export interface LFGPost {
   id: string;
   authorId: string;
   authorName: string;
   game: string;
-  rank: string;
+  role: string;
   intent: LFGIntent;
   description: string;
   playersNeeded: number;
   playersCurrent: number;
+  status: LFGStatus;
   createdAt: string;
 }
 
@@ -52,17 +55,29 @@ export function useLFG() {
     return () => unsubscribe();
   }, []);
 
-  const createLFG = async (post: Omit<LFGPost, "id" | "authorId" | "authorName" | "playersCurrent" | "createdAt">, authorId: string, authorName: string) => {
+  const createLFG = async (post: Omit<LFGPost, "id" | "authorId" | "authorName" | "createdAt">, authorId: string, authorName: string) => {
     try {
       await addDoc(collection(db, "lfg_posts"), {
         ...post,
         authorId,
         authorName,
-        playersCurrent: 1,
         createdAt: Timestamp.now(),
       });
     } catch (error) {
       console.error("Error creating LFG post:", error);
+    }
+  };
+
+  const updateLFG = async (id: string, updates: Partial<LFGPost>) => {
+    try {
+      const docRef = doc(db, "lfg_posts", id);
+      if (updates.status === "End Party") {
+        await deleteDoc(docRef);
+      } else {
+        await updateDoc(docRef, updates);
+      }
+    } catch (error) {
+      console.error("Error updating LFG post:", error);
     }
   };
 
@@ -74,6 +89,6 @@ export function useLFG() {
     }
   };
 
-  return { posts, createLFG, deleteLFG, loading };
+  return { posts, createLFG, updateLFG, deleteLFG, loading };
 }
 

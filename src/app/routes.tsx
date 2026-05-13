@@ -13,6 +13,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { TeamDashboard } from "./pages/TeamDashboard";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ProfilePage } from "./pages/ProfilePage";
+import { MyEventsPage } from "./pages/MyEventsPage";
 
 function RootLayout() {
   return (
@@ -45,6 +46,7 @@ export const router = createBrowserRouter([
       { path: "events", Component: EventsPage },
       { path: "community", Component: CommunityPage },
       { path: "profile", Component: ProfilePage },
+      { path: "my-events", Component: MyEventsPage },
       {
         path: "team",
         element: (
