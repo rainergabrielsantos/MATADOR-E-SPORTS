@@ -53,7 +53,7 @@ export function LoginPage() {
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#0a0a0f]">
       {/* Background Image with Overlay */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 scale-105"
         style={{
           backgroundImage: `url('/login-bg.png')`
@@ -71,7 +71,7 @@ export function LoginPage() {
           <h1 className="text-4xl font-bold tracking-tight text-white mb-2 uppercase italic">
             Matador <span className="text-[#CE1126]">Esports Hub</span>
           </h1>
-          <p className="text-[#a8b2bf] text-lg">Matador's Official Gaming Hub</p>
+          <p className="text-[#a8b2bf] text-lg">Grab the Game by the Horns</p>
         </div>
 
         {/* Login Card */}
@@ -175,7 +175,7 @@ export function LoginPage() {
           </form>
 
           <div className="mt-8 text-center space-y-4">
-            <button 
+            <button
               onClick={() => { setIsSignUp(!isSignUp); setErrorMsg(""); }}
               className="text-sm text-[#a8b2bf] hover:text-[#CE1126] transition-colors cursor-pointer"
             >
@@ -191,7 +191,7 @@ export function LoginPage() {
 
         {/* Footer info */}
         <p className="mt-10 text-center text-[#a8b2bf]/60 text-sm">
-          California State University, Northridge<br/>
+          California State University, Northridge<br />
           Department of Student Life & Matador Esports Hub
         </p>
       </div>
