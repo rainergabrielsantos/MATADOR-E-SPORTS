@@ -20,7 +20,7 @@ import {
   ClipboardList
 } from "lucide-react";
 import { StarRating, AnimatedProgressBar } from "./ui/StarRating";
-import { GAME_METRICS_MAP, SkillMetric } from "../lib/gameMetrics";
+import { GAME_METRICS_MAP, SkillMetric } from "../../lib/gameMetrics";
 import { CoachingTicket } from "../hooks/useTickets";
 import { toast } from "sonner";
 
