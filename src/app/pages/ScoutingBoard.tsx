@@ -111,7 +111,6 @@ export function ScoutingBoard() {
     <div className="p-8 max-w-5xl mx-auto min-h-full">
       <PageHeader
         title="Scouting Board"
-        subtitle="Manage recruitment bounties and review tryout applicants."
         backTo="/dashboard/coach-terminal"
         backLabel="Coach's Terminal"
         action={

@@ -108,7 +108,6 @@ export function CoachTerminal() {
     <div className="p-8 max-w-[1600px] mx-auto min-h-full space-y-12 animate-in fade-in duration-700">
       <PageHeader
         title="Coach Command Terminal"
-        subtitle="Operational Control: Real-time reminder board, varsity performance metrics, and client queue."
         backTo="/dashboard"
         backLabel="Dashboard"
       />

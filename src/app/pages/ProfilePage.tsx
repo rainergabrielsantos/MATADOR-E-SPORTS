@@ -49,7 +49,6 @@ export function ProfilePage() {
     <div className="p-8 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-700">
       <PageHeader
         title="Edit Profile"
-        subtitle="Manage your personal information, gaming preferences, and identity."
         backTo="/dashboard"
         backLabel="Dashboard"
       />

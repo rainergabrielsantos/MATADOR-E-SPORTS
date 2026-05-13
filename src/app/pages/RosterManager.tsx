@@ -90,7 +90,6 @@ export function RosterManager() {
     <div className="p-8 max-w-5xl mx-auto min-h-full">
       <PageHeader
         title="Roster Manager"
-        subtitle="Manage player status, roles, and team assignments."
         backTo="/dashboard/coach-terminal"
         backLabel="Coach's Terminal"
         action={

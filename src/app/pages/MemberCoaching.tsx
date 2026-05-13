@@ -51,7 +51,7 @@ export function MemberCoaching() {
     <div className="p-8 max-w-5xl mx-auto space-y-12 animate-in fade-in duration-700">
       <PageHeader
         title="Member Coaching"
-        subtitle="Request specialized help from our Varsity coaches to level up your game."
+        subtitle="Coaches are like your friends, but they actually know what they're doing>"
         backTo="/dashboard"
         backLabel="Dashboard"
       />

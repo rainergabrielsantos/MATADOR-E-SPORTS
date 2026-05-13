@@ -24,7 +24,6 @@ export function MyEventsPage() {
     <div className="p-8 max-w-6xl mx-auto space-y-10 animate-in fade-in duration-700">
       <PageHeader
         title="My Matador Events"
-        subtitle="Your personal schedule of upcoming campus hangouts and tournaments."
         backTo="/dashboard/community"
         backLabel="Community Hub"
       />

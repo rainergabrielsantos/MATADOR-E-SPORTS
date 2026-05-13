@@ -55,7 +55,7 @@ export function HomeDashboard() {
         <QuickCard
           icon={Trophy}
           title="The Pro Pipeline"
-          subtitle="Your path to varsity"
+          subtitle="Glory, Greatness, Guts."
           metric="50%"
           metricLabel="Progress to next milestone"
           ctaLabel="View Tracker"
