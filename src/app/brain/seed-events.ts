@@ -19,7 +19,7 @@ const db = getFirestore(app);
 
 const fabricatedEvents = [
   {
-    title: "CSUN E-Sports Kickoff Mixer",
+    title: "Matador Esports Kickoff Mixer",
     description: "Meet the teams, play some friendlies, and grab some free food! Open to all majors.",
     date: "Oct 25, 2026",
     time: "6:00 PM",
@@ -33,7 +33,7 @@ const fabricatedEvents = [
     description: "Are you Radiant material? Come show off your skills for a spot on the official Matador Varsity squad.",
     date: "Oct 26, 2026",
     time: "2:00 PM",
-    location: "CSUN Discord / Online",
+    location: "Matador Discord / Online",
     game: "Valorant",
     attendeesCount: 12,
     image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop"

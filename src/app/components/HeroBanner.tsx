@@ -18,7 +18,7 @@ export function HeroBanner() {
         <div className="flex items-center gap-2 mb-3">
           <Sparkles className="h-6 w-6 text-[#CE1126]" />
           <span className="text-[#a8b2bf] tracking-wide uppercase text-sm">
-            Welcome to CSUN E-Sports
+            Welcome to Matador Esports Hub
           </span>
         </div>
         <h1 className="text-5xl mb-3 tracking-tight">
@@ -27,7 +27,7 @@ export function HeroBanner() {
           <span className="text-[#CE1126]">Dominate.</span>
         </h1>
         <p className="text-[#a8b2bf] text-lg max-w-2xl">
-          Join California State University Northridge's premier E-Sports community. 
+          Join Matador's premier Esports community. 
           Connect with fellow gamers, climb the ranks, and take your shot at varsity glory.
         </p>
       </div>

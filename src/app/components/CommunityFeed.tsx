@@ -25,8 +25,8 @@ export function CommunityFeed() {
     },
     {
       type: "stream",
-      title: "CSUN vs UCLA Scrimmage",
-      streamer: "CSUNEsportsTV",
+      title: "Matadors vs UCLA Scrimmage",
+      streamer: "MatadorEsportsTV",
       game: "League of Legends",
       viewers: 234,
       live: true,

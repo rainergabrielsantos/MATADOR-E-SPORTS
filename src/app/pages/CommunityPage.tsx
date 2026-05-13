@@ -136,7 +136,7 @@ export function CommunityPage() {
         createdAt: Timestamp.now(),
       },
       {
-        authorName: "SupportMainCSUN",
+        authorName: "SupportMainMatador",
         game: "Overwatch 2",
         role: "Support",
         intent: "Competitive",

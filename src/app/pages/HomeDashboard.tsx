@@ -8,8 +8,8 @@ import { Badge } from "../components/ui/badge";
 const liveStreams = [
   {
     id: "stream-1",
-    title: "CSUN vs UCLA Scrimmage",
-    streamer: "CSUNEsportsTV",
+    title: "Matadors vs UCLA Scrimmage",
+    streamer: "MatadorEsportsTV",
     game: "League of Legends",
     viewers: 234,
   },

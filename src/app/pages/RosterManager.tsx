@@ -18,7 +18,7 @@ type PlayerStatus = "Active" | "Trial" | "Inactive";
 interface Player {
   id: string;
   name: string;
-  csunId: string;
+  matadorId: string;
   game: string;
   role: string;
   rank: string;
@@ -40,13 +40,13 @@ const statusColors: Record<PlayerStatus, string> = {
 const games = ["Valorant", "League of Legends", "Rocket League", "CS2", "Overwatch 2"];
 
 const initialPlayers: Player[] = [
-  { id: "p1", name: "MatadorX", csunId: "012345678", game: "Valorant", role: "IGL / Controller", rank: "Diamond 3", status: "Active" },
-  { id: "p2", name: "RedMatador", csunId: "023456789", game: "Valorant", role: "Sentinel", rank: "Ascendant 1", status: "Active" },
-  { id: "p3", name: "MatadorGG", csunId: "034567890", game: "League of Legends", role: "Jungle", rank: "Platinum 2", status: "Trial" },
-  { id: "p4", name: "SilverMat", csunId: "045678901", game: "CS2", role: "Entry", rank: "MG2", status: "Trial" },
+  { id: "p1", name: "MatadorX", matadorId: "012345678", game: "Valorant", role: "IGL / Controller", rank: "Diamond 3", status: "Active" },
+  { id: "p2", name: "RedMatador", matadorId: "023456789", game: "Valorant", role: "Sentinel", rank: "Ascendant 1", status: "Active" },
+  { id: "p3", name: "MatadorGG", matadorId: "034567890", game: "League of Legends", role: "Jungle", rank: "Platinum 2", status: "Trial" },
+  { id: "p4", name: "SilverMat", matadorId: "045678901", game: "CS2", role: "Entry", rank: "MG2", status: "Trial" },
 ];
 
-const emptyAddForm = { name: "", csunId: "", game: games[0], role: "", rank: "" };
+const emptyAddForm = { name: "", matadorId: "", game: games[0], role: "", rank: "" };
 
 export function RosterManager() {
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
@@ -70,7 +70,7 @@ export function RosterManager() {
   }
 
   function addPlayer() {
-    if (!addForm.name || !addForm.csunId || !addForm.role || !addForm.rank) return;
+    if (!addForm.name || !addForm.matadorId || !addForm.role || !addForm.rank) return;
     const newPlayer: Player = {
       id: `p${Date.now()}`,
       ...addForm,
@@ -158,7 +158,7 @@ export function RosterManager() {
               {/* Player info */}
               <div>
                 <p className="text-white font-medium text-sm">{player.name}</p>
-                <p className="text-[#a8b2bf] text-xs">{player.csunId}</p>
+                <p className="text-[#a8b2bf] text-xs">{player.matadorId}</p>
               </div>
 
               {/* Game / role */}
@@ -205,7 +205,7 @@ export function RosterManager() {
           <div className="space-y-4 py-2">
             {[
               { id: "add-name", label: "Player Name / Username", key: "name", placeholder: "e.g. MatadorX" },
-              { id: "add-csunid", label: "CSUN ID", key: "csunId", placeholder: "e.g. 012345678" },
+              { id: "add-matadorid", label: "Matador ID", key: "matadorId", placeholder: "e.g. 012345678" },
               { id: "add-role", label: "Role / Position", key: "role", placeholder: "e.g. IGL, Sentinel, Jungle" },
               { id: "add-rank", label: "Current Rank", key: "rank", placeholder: "e.g. Diamond 3" },
             ].map(({ id, label, key, placeholder }) => (

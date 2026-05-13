@@ -62,9 +62,9 @@ export function LoginPage() {
             <Shield className="h-10 w-10 text-white" />
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-white mb-2 uppercase italic">
-            Matador <span className="text-[#CE1126]">E-Sports</span>
+            Matador <span className="text-[#CE1126]">Esports Hub</span>
           </h1>
-          <p className="text-[#a8b2bf] text-lg">CSUN's Official Gaming Hub</p>
+          <p className="text-[#a8b2bf] text-lg">Matador's Official Gaming Hub</p>
         </div>
 
         {/* Login Card */}
@@ -72,7 +72,7 @@ export function LoginPage() {
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-[#a8b2bf] mb-2 px-1">
-                CSUN ID Number
+                Matador ID Number
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#a8b2bf] group-focus-within:text-[#CE1126] transition-colors">
@@ -185,7 +185,7 @@ export function LoginPage() {
         {/* Footer info */}
         <p className="mt-10 text-center text-[#a8b2bf]/60 text-sm">
           California State University, Northridge<br/>
-          Department of Student Life & E-Sports
+          Department of Student Life & Matador Esports Hub
         </p>
       </div>
 

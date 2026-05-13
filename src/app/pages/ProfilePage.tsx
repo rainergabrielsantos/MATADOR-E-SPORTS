@@ -104,7 +104,7 @@ export function ProfilePage() {
               </div>
               <div className="flex items-start gap-2 mt-2 text-[#a8b2bf]/70 text-xs italic bg-white/5 p-3 rounded-lg border border-white/5">
                 <AlertCircle className="h-4 w-4 text-[#CE1126] shrink-0 mt-0.5" />
-                <p>Gamer Tag and Organization Status are locked to your official CSUN registration. Contact an administrator to request a change.</p>
+                <p>Gamer Tag and Organization Status are locked to your official Matador registration. Contact an administrator to request a change.</p>
               </div>
             </div>
 

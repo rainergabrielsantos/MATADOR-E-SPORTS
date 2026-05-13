@@ -1,7 +1,7 @@
 
-  # CSUN E-Sports Hub Interface
+  # Matador Esports Hub
 
-  This is a code bundle for CSUN E-Sports Hub Interface. The original project is available at https://www.figma.com/design/5zcfr2LYwkG4JruRTq85lS/CSUN-E-Sports-Hub-Interface.
+  This is the official codebase for the Matador Esports Hub.
 
   ## Running the code
 

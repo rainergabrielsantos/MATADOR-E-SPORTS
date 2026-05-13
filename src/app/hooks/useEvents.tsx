@@ -11,7 +11,7 @@ import {
   getDocs
 } from "firebase/firestore";
 
-export interface CSUNEvent {
+export interface MatadorEvent {
   id: string;
   title: string;
   description: string;
@@ -24,7 +24,7 @@ export interface CSUNEvent {
 }
 
 export function useEvents(currentUserId?: string) {
-  const [events, setEvents] = useState<CSUNEvent[]>([]);
+  const [events, setEvents] = useState<MatadorEvent[]>([]);
   const [rsvps, setRsvps] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +33,7 @@ export function useEvents(currentUserId?: string) {
       const fetched = snapshot.docs.map(docSnap => ({
         id: docSnap.id,
         ...docSnap.data()
-      })) as CSUNEvent[];
+      })) as MatadorEvent[];
       setEvents(fetched);
       setLoading(false);
     });

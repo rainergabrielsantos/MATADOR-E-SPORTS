@@ -36,7 +36,7 @@ export function EventsPage() {
     setIsSeeding(true);
     const fabricatedEvents = [
       {
-        title: "CSUN E-Sports Kickoff Mixer",
+        title: "Matador Esports Kickoff Mixer",
         description: "Meet the teams, play some friendlies, and grab some free food! Open to all majors.",
         date: "Oct 25, 2026",
         time: "6:00 PM",
@@ -50,7 +50,7 @@ export function EventsPage() {
         description: "Are you Radiant material? Come show off your skills for a spot on the official Matador Varsity squad.",
         date: "Oct 26, 2026",
         time: "2:00 PM",
-        location: "CSUN Discord / Online",
+        location: "Matador Discord / Online",
         game: "Valorant",
         attendeesCount: 12,
         image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop"
@@ -71,7 +71,7 @@ export function EventsPage() {
       for (const e of fabricatedEvents) {
         await addDoc(collection(db, "events"), e);
       }
-      toast.success("Fabricated CSUN events seeded successfully!");
+      toast.success("Fabricated Matador events seeded successfully!");
     } catch (err) {
       toast.error("Failed to seed events.");
     } finally {
@@ -90,7 +90,7 @@ export function EventsPage() {
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-12 animate-in fade-in duration-700">
       <PageHeader
-        title="CSUN Campus Events"
+        title="Matador Campus Events"
         subtitle="Discover official tournaments, Esports events, and games with other Matadors"
         backTo="/dashboard/community"
         backLabel="Community Hub"
@@ -183,7 +183,7 @@ export function EventsPage() {
           <Calendar className="h-16 w-16 text-white/5 mx-auto" />
           <div className="space-y-2">
             <h2 className="text-xl font-bold text-white uppercase italic">No campus events <span className="text-[#CE1126]">detected</span></h2>
-            <p className="text-[#a8b2bf] max-w-md mx-auto text-sm">Matador E-Sports is currently planning the next set of mixers and tournaments. Check back soon!</p>
+            <p className="text-[#a8b2bf] max-w-md mx-auto text-sm">Matador Esports Hub is currently planning the next set of mixers and tournaments. Check back soon!</p>
           </div>
           <Button onClick={seedEvents} disabled={isSeeding} variant="outline" className="border-[#CE1126]/30 text-[#CE1126] hover:bg-[#CE1126]/10 rounded-xl px-8 h-12 font-bold uppercase tracking-widest">
             {isSeeding ? "Generating..." : "Generate Sample Events"}

@@ -40,9 +40,9 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   
-  /* CSUN Brand Colors */
-  --csun-red: #CE1126;
-  --csun-metallic: #a8b2bf;
+  /* Matador Brand Colors */
+  --matador-red: #CE1126;
+  --matador-metallic: #a8b2bf;
 }
 
 .dark {
@@ -81,9 +81,9 @@
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
   
-  /* CSUN Brand Colors */
-  --csun-red: #CE1126;
-  --csun-metallic: #a8b2bf;
+  /* Matador Brand Colors */
+  --matador-red: #CE1126;
+  --matador-metallic: #a8b2bf;
 }
 
 @theme inline {
