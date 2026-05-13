@@ -14,6 +14,9 @@ export function CoachingKanban() {
   const { tickets, updateTicketStatus, loading } = useTickets();
   const [selectedTicket, setSelectedTicket] = useState<CoachingTicket | null>(null);
   const [feedbackUrl, setFeedbackUrl] = useState("");
+  const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
+  const [messageTicket, setMessageTicket] = useState<CoachingTicket | null>(null);
+  const [messageOpen, setMessageOpen] = useState(false);
 
   if (loading) {
     return (
@@ -22,10 +25,6 @@ export function CoachingKanban() {
       </div>
     );
   }
-  const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
-  
-  const [messageTicket, setMessageTicket] = useState<CoachingTicket | null>(null);
-  const [messageOpen, setMessageOpen] = useState(false);
 
   const columns: { status: TicketStatus; label: string; color: string }[] = [
     { status: "Pending", label: "Pending Review", color: "bg-yellow-500" },
