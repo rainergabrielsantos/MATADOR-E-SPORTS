@@ -6,7 +6,7 @@ import { useAuth, Role } from "../hooks/useAuth";
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, register } = useAuth();
   const [csunId, setCsunId] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<Role>("Member");
