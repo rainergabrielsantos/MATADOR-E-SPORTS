@@ -65,13 +65,27 @@ export function LoginPage() {
       {/* Content Container */}
       <div className="relative z-10 w-full max-w-md px-6 py-12">
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center p-4 bg-[#CE1126] rounded-2xl mb-6 shadow-2xl shadow-[#CE1126]/40 animate-bounce-subtle">
-            <Shield className="h-10 w-10 text-white" />
+          <div className="inline-flex items-center justify-center mb-6 drop-shadow-[0_0_20px_rgba(206,17,38,0.4)] animate-bounce-subtle">
+            <img 
+              src="/logo.png" 
+              alt="Matador Esports Hub Logo" 
+              className="h-32 w-auto"
+              onError={(e) => {
+                // Fallback to Shield icon if logo.png is missing
+                e.currentTarget.style.display = 'none';
+                const parent = e.currentTarget.parentElement;
+                if (parent) {
+                  parent.classList.add('p-4', 'bg-[#CE1126]', 'rounded-2xl');
+                  const shield = document.createElement('div');
+                  shield.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>';
+                  parent.appendChild(shield.firstChild!);
+                }
+              }}
+            />
           </div>
-          <h1 className="text-4xl font-bold tracking-tight text-white mb-2 uppercase italic">
-            Matador <span className="text-[#CE1126]">Esports Hub</span>
-          </h1>
-          <p className="text-[#a8b2bf] text-lg">Grab the Game by the Horns</p>
+          {/* We keep the text for accessibility/SEO but hide it visually if the logo already contains the text */}
+          <h1 className="sr-only">Matador Esports Hub</h1>
+          <p className="text-[#a8b2bf] text-lg mt-2">Grab the Game by the Horns</p>
         </div>
 
         {/* Login Card */}

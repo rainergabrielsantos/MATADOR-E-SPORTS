@@ -143,9 +143,24 @@ export function LeftSidebar() {
 
       {/* Footer */}
       <div className="p-6 border-t border-white/10">
-        <div className="text-center group">
-          <p className="text-[#CE1126] tracking-[0.3em] uppercase text-[10px] font-black mb-0.5 group-hover:scale-110 transition-transform">Matador</p>
-          <p className="text-white tracking-[0.1em] uppercase text-xs font-black">Esports Hub</p>
+        <div className="flex flex-col items-center group">
+          <img 
+            src="/logo.png" 
+            alt="Matador Esports Hub Logo" 
+            className="h-16 w-auto opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"
+            onError={(e) => {
+              // Fallback to text if logo is missing
+              e.currentTarget.style.display = 'none';
+              const next = e.currentTarget.nextElementSibling as HTMLElement;
+              if (next) next.style.display = 'block';
+              const prev = e.currentTarget.previousElementSibling as HTMLElement;
+              if (prev) prev.style.display = 'block';
+            }}
+          />
+          <div style={{ display: 'none' }}>
+            <p className="text-[#CE1126] tracking-[0.3em] uppercase text-[10px] font-black mb-0.5">Matador</p>
+            <p className="text-white tracking-[0.1em] uppercase text-xs font-black">Esports Hub</p>
+          </div>
         </div>
       </div>
     </aside>
