@@ -31,9 +31,9 @@ export function LoginPage() {
         navigate("/dashboard");
       } catch (err: any) {
         if (err.code === 'auth/email-already-in-use') {
-          setErrorMsg("An account with this CSUN ID already exists.");
+          setErrorMsg("An account with this Matador ID already exists.");
         } else if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found') {
-          setErrorMsg("Invalid CSUN ID or Password. Please try again.");
+          setErrorMsg("Invalid Matador ID or Password. Please try again.");
         } else {
           setErrorMsg(err.message || "An error occurred. Please try again.");
         }

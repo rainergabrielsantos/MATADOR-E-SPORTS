@@ -144,8 +144,8 @@ export function LeftSidebar() {
       {/* Footer */}
       <div className="p-6 border-t border-white/10">
         <div className="text-center group">
-          <p className="text-[#CE1126] tracking-[0.3em] uppercase text-[10px] font-black mb-0.5 group-hover:scale-110 transition-transform">MATADOR</p>
-          <p className="text-white tracking-[0.1em] uppercase text-xs font-black">ESPORTS <span className="text-[#CE1126]">HUB</span></p>
+          <p className="text-[#CE1126] tracking-[0.3em] uppercase text-[10px] font-black mb-0.5 group-hover:scale-110 transition-transform">Matador</p>
+          <p className="text-white tracking-[0.1em] uppercase text-xs font-black">Esports Hub</p>
         </div>
       </div>
     </aside>
