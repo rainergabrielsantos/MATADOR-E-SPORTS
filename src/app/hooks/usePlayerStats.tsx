@@ -6,25 +6,32 @@ import {
   updateDoc, 
   setDoc, 
   getDoc,
-  Timestamp,
   arrayUnion
 } from "firebase/firestore";
 
-export interface SkillSnapshot {
+export interface GameSkillSnapshot {
   timestamp: string;
-  aim: number;
-  sense: number;
-  mental: number;
+  metrics: Record<string, number>;
 }
 
 export interface PlayerStats {
   userId: string;
-  history: SkillSnapshot[];
+  games: Record<string, {
+    current: Record<string, number>;
+    history: GameSkillSnapshot[];
+  }>;
+  // Aggregated/Legacy overview
   current: {
     aim: number;
     sense: number;
     mental: number;
   };
+  history: {
+    timestamp: string;
+    aim: number;
+    sense: number;
+    mental: number;
+  }[];
 }
 
 export function usePlayerStats(userId?: string) {
@@ -50,25 +57,58 @@ export function usePlayerStats(userId?: string) {
     return () => unsubscribe();
   }, [userId]);
 
-  const updatePlayerStats = async (targetUserId: string, newStats: { aim: number; sense: number; mental: number }) => {
+  const updatePlayerStats = async (
+    targetUserId: string, 
+    gameName: string, 
+    newMetrics: Record<string, number>
+  ) => {
     try {
       const docRef = doc(db, "player_stats", targetUserId);
-      const snapshot: SkillSnapshot = {
-        timestamp: new Date().toISOString(),
-        ...newStats
+      const timestamp = new Date().toISOString();
+      
+      const gameSnapshot: GameSkillSnapshot = {
+        timestamp,
+        metrics: newMetrics
+      };
+
+      // Calculate simple aggregates for the global overview
+      // We'll map some known keys to aim/sense/mental
+      const scores = Object.values(newMetrics);
+      const avg = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+      
+      // Simple heuristic for aggregation:
+      // If the metric name contains certain keywords, add to that category
+      const legacyStats = {
+        aim: newMetrics["aim"] || newMetrics["mechanics"] || avg * 20, // converting 5-star to percentage
+        sense: newMetrics["sense"] || newMetrics["strategy"] || avg * 20,
+        mental: newMetrics["mental"] || newMetrics["comms"] || avg * 20
       };
 
       const docSnap = await getDoc(docRef);
       if (!docSnap.exists()) {
         await setDoc(docRef, {
           userId: targetUserId,
-          current: newStats,
-          history: [snapshot]
+          current: legacyStats,
+          history: [{ timestamp, ...legacyStats }],
+          games: {
+            [gameName]: {
+              current: newMetrics,
+              history: [gameSnapshot]
+            }
+          }
         });
       } else {
+        const currentData = docSnap.data() as PlayerStats;
+        const games = currentData.games || {};
+        const gameData = games[gameName] || { current: {}, history: [] };
+        
         await updateDoc(docRef, {
-          current: newStats,
-          history: arrayUnion(snapshot)
+          current: legacyStats,
+          history: arrayUnion({ timestamp, ...legacyStats }),
+          [`games.${gameName}`]: {
+            current: newMetrics,
+            history: [...(gameData.history || []), gameSnapshot]
+          }
         });
       }
     } catch (error) {

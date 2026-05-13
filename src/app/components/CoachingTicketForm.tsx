@@ -6,8 +6,11 @@ import { Textarea } from "./ui/textarea";
 import { Label } from "./ui/label";
 import { useAuth } from "../hooks/useAuth";
 import { useTickets } from "../hooks/useTickets";
-import { Video, Target, Send } from "lucide-react";
+import { Video, Target, Send, Gamepad2, HelpCircle } from "lucide-react";
 import { toast } from "sonner";
+
+const SUPPORTED_GAMES = ["Valorant", "League of Legends", "Overwatch 2", "Rocket League"];
+const HELP_TYPES = ["VOD Review", "Live Coaching", "Macro Strategy", "Mechanical Drills"];
 
 export function CoachingTicketForm() {
   const { user } = useAuth();
@@ -15,6 +18,8 @@ export function CoachingTicketForm() {
   const [open, setOpen] = useState(false);
   const [vodLink, setVodLink] = useState("");
   const [goals, setGoals] = useState("");
+  const [game, setGame] = useState("Valorant");
+  const [helpType, setHelpType] = useState("VOD Review");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +29,8 @@ export function CoachingTicketForm() {
       player_id: user.id,
       playerName: user.username,
       vodLink,
+      game,
+      helpType,
       goals,
     });
 
@@ -36,61 +43,85 @@ export function CoachingTicketForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-[#CE1126] hover:bg-[#CE1126]/90 text-white gap-2 shadow-lg shadow-[#CE1126]/20">
+        <Button className="bg-[#CE1126] hover:bg-[#CE1126]/90 text-white gap-2 shadow-lg shadow-[#CE1126]/20 px-8 h-12 rounded-xl font-black uppercase tracking-widest text-xs">
           <Video className="h-4 w-4" />
-          Request Coaching
+          Initiate Review
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] bg-[#131318] border-white/10 text-white">
+      <DialogContent className="sm:max-w-[500px] bg-[#0a0a0c] border-white/10 text-white rounded-[2.5rem] p-8 shadow-2xl overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#CE1126]/5 rounded-full blur-3xl pointer-events-none" />
+        
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold uppercase italic">
-            New <span className="text-[#CE1126]">Ticket</span>
+          <DialogTitle className="text-3xl font-black uppercase italic tracking-tighter flex items-center gap-4">
+             <div className="p-3 bg-[#CE1126]/20 rounded-2xl">
+                <Target className="h-6 w-6 text-[#CE1126]" />
+             </div>
+             New <span className="text-[#CE1126]">Mission</span>
           </DialogTitle>
-          <DialogDescription className="text-[#a8b2bf]">
-            Submit a VOD for review and tell your coach what you want to improve.
+          <DialogDescription className="text-white/40 font-medium uppercase tracking-widest text-[10px] mt-2">
+            Submit your performance data for elite analysis.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-6 pt-4">
-          <div className="space-y-2">
-            <Label htmlFor="vod" className="text-sm font-medium text-[#a8b2bf]">
-              VOD Link (YouTube/Twitch)
-            </Label>
-            <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#a8b2bf] group-focus-within:text-[#CE1126] transition-colors">
-                <Video className="h-4 w-4" />
+
+        <form onSubmit={handleSubmit} className="space-y-6 pt-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Select Game</Label>
+              <div className="relative">
+                <Gamepad2 className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#CE1126]" />
+                <select 
+                  value={game}
+                  onChange={(e) => setGame(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-[#CE1126]/50 transition-all appearance-none"
+                >
+                  {SUPPORTED_GAMES.map(g => <option key={g} value={g} className="bg-[#131318]">{g}</option>)}
+                </select>
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Assistance Type</Label>
+              <div className="relative">
+                <HelpCircle className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-400" />
+                <select 
+                  value={helpType}
+                  onChange={(e) => setHelpType(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all appearance-none"
+                >
+                  {HELP_TYPES.map(t => <option key={t} value={t} className="bg-[#131318]">{t}</option>)}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Media Source (VOD Link)</Label>
+            <div className="relative group">
+              <Video className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-[#CE1126] transition-colors" />
               <Input
-                id="vod"
-                placeholder="https://youtube.com/watch?v=..."
+                placeholder="YouTube or Twitch URL"
                 value={vodLink}
                 onChange={(e) => setVodLink(e.target.value)}
-                className="bg-white/5 border-white/10 pl-10 focus:ring-[#CE1126]/50"
+                className="bg-white/5 border-white/10 pl-12 h-14 rounded-2xl text-xs font-bold focus:ring-[#CE1126]/50 transition-all"
                 required
               />
             </div>
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="goals" className="text-sm font-medium text-[#a8b2bf]">
-              Coaching Goals
-            </Label>
-            <div className="relative group">
-              <div className="absolute top-3 left-3 pointer-events-none text-[#a8b2bf] group-focus-within:text-[#CE1126] transition-colors">
-                <Target className="h-4 w-4" />
-              </div>
-              <Textarea
-                id="goals"
-                placeholder="I want to work on my utility usage and positioning..."
-                value={goals}
-                onChange={(e) => setGoals(e.target.value)}
-                className="bg-white/5 border-white/10 pl-10 min-h-[120px] focus:ring-[#CE1126]/50"
-                required
-              />
-            </div>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Directives & Objectives</Label>
+            <Textarea
+              placeholder="What specifically should the coach look for in this session?"
+              value={goals}
+              onChange={(e) => setGoals(e.target.value)}
+              className="bg-white/5 border-white/10 rounded-2xl p-6 min-h-[120px] text-xs font-bold focus:ring-[#CE1126]/50 transition-all placeholder:text-white/10"
+              required
+            />
           </div>
-          <DialogFooter>
-            <Button type="submit" className="w-full bg-[#CE1126] hover:bg-[#CE1126]/90 gap-2">
-              <Send className="h-4 w-4" />
-              Submit Ticket
+
+          <DialogFooter className="pt-4">
+            <Button type="submit" className="w-full bg-[#CE1126] hover:bg-[#CE1126]/90 h-16 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-[#CE1126]/20">
+              <Send className="h-4 w-4 mr-2" />
+              Transmit Request
             </Button>
           </DialogFooter>
         </form>

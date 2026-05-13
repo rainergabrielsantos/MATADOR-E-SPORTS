@@ -15,6 +15,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ProfilePage } from "./pages/ProfilePage";
 import { MyEventsPage } from "./pages/MyEventsPage";
 import { MemberCoaching } from "./pages/MemberCoaching";
+import { ProPipelineSubmission } from "./pages/ProPipelineSubmission";
 
 function RootLayout() {
   return (
@@ -44,6 +45,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, Component: HomeDashboard },
       { path: "path-to-pro", Component: PathToPro },
+      { path: "pro-pipeline-submission", Component: ProPipelineSubmission },
       { path: "events", Component: EventsPage },
       { path: "community", Component: CommunityPage },
       { path: "profile", Component: ProfilePage },

@@ -71,9 +71,16 @@ export function CoachTerminal() {
         notes,
         metrics
       );
+
+      // If we are completing a review and have metrics, sync them to player stats
+      if (status === "Completed" && metrics) {
+        await updatePlayerStats(selectedTicket.player_id, selectedTicket.game, metrics);
+      }
+
       toast.success(`Analysis ${status === "Completed" ? "delivered" : "saved"}`);
       setSelectedTicket(null);
     } catch (error) {
+      console.error(error);
       toast.error("Failed to update task.");
     } finally {
       setIsUpdating(false);
