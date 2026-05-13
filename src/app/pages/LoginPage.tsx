@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { Shield, Lock, User, ArrowRight, UserCircle } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -16,6 +16,13 @@ export function LoginPage() {
 
   const [isSignUp, setIsSignUp] = useState(false);
   const [username, setUsername] = useState("");
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +35,7 @@ export function LoginPage() {
         } else {
           await login(csunId, password);
         }
-        navigate("/dashboard");
+        // Navigation is now handled by the useEffect for reactive redirect
       } catch (err: any) {
         if (err.code === 'auth/email-already-in-use') {
           setErrorMsg("An account with this Matador ID already exists.");

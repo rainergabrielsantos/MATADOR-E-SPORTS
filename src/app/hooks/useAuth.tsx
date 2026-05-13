@@ -66,16 +66,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (csunId: string, password: string) => {
     const email = `${csunId}@csun.edu`;
+    setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const docRef = doc(db, "users", userCredential.user.uid);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        setUser({ id: userCredential.user.uid, ...docSnap.data() } as User);
+      }
     } catch (error: any) {
       console.error("Login failed:", error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const register = async (csunId: string, password: string, role: Role, username?: string) => {
     const email = `${csunId}@csun.edu`;
+    setLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const newUser: Omit<User, "id"> = {
@@ -88,6 +98,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       console.error("Registration failed:", error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
