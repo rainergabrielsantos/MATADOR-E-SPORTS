@@ -33,6 +33,7 @@ import {
 } from "../components/ui/dialog";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { MetricAnalysisModal } from "../components/MetricAnalysisModal";
 
 export function CoachTerminal() {
   const { user } = useAuth();
@@ -58,12 +59,19 @@ export function CoachTerminal() {
     setFeedback(ticket.feedback || "");
   };
 
-  const handleUpdateTicket = async (status: TicketStatus) => {
+  const handleUpdateTicket = async (status: TicketStatus, finalFeedback?: string, notes?: string, metrics?: Record<string, number>) => {
     if (!selectedTicket) return;
     setIsUpdating(true);
     try {
-      await updateTicketStatus(selectedTicket.id, status, undefined, feedback);
-      toast.success(`Task marked as ${status}`);
+      await updateTicketStatus(
+        selectedTicket.id, 
+        status, 
+        undefined, 
+        finalFeedback || feedback,
+        notes,
+        metrics
+      );
+      toast.success(`Analysis ${status === "Completed" ? "delivered" : "saved"}`);
       setSelectedTicket(null);
     } catch (error) {
       toast.error("Failed to update task.");
@@ -138,7 +146,7 @@ export function CoachTerminal() {
             <div className="space-y-6">
               <div className="flex items-center gap-2 px-2">
                 <Shield className="h-4 w-4 text-blue-400" />
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/40">Varsity Squad Reviews</h3>
+                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/40">Varsity VOD Inbox</h3>
               </div>
               <div className="bg-white/[0.02] border border-white/10 rounded-[2.5rem] p-6 min-h-[500px] space-y-4">
                 {varsityPending.length === 0 ? (
@@ -308,62 +316,15 @@ export function CoachTerminal() {
       </div>
 
       {/* Unified Review Modal */}
-      <Dialog open={!!selectedTicket} onOpenChange={(open) => !open && setSelectedTicket(null)}>
-        <DialogContent className="bg-[#131318] border-white/10 text-white max-w-lg rounded-[2.5rem] shadow-2xl p-8">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-black uppercase italic tracking-wider flex items-center gap-4">
-              <div className="p-3 bg-[#CE1126] rounded-2xl shadow-lg shadow-[#CE1126]/20">
-                <MessageSquare className="h-6 w-6 text-white" />
-              </div>
-              Mission <span className="text-[#CE1126]">Briefing</span>
-            </DialogTitle>
-          </DialogHeader>
-
-          {selectedTicket && (
-            <div className="space-y-8 pt-8">
-              <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-3 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-5"><Zap className="h-12 w-12" /></div>
-                <p className="text-[10px] text-[#CE1126] font-black uppercase tracking-[0.2em]">Context & Requirements</p>
-                <p className="text-sm text-white/80 italic leading-relaxed">"{selectedTicket.goals}"</p>
-                {selectedTicket.vodLink && (
-                  <Button variant="link" className="p-0 text-blue-400 text-[10px] font-black uppercase h-auto" asChild>
-                    <a href={selectedTicket.vodLink} target="_blank" rel="noreferrer">
-                      <ExternalLink className="h-3 w-3 mr-1" /> View Associated Media
-                    </a>
-                  </Button>
-                )}
-              </div>
-
-              <div className="space-y-3">
-                <label className="text-[10px] text-[#a8b2bf] font-black uppercase tracking-[0.2em] ml-1">Critique & Directives</label>
-                <textarea
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  placeholder="Enter specific critiques and development steps..."
-                  className="w-full bg-white/5 border border-white/10 rounded-3xl p-6 focus:outline-none focus:ring-2 focus:ring-[#CE1126]/50 min-h-[180px] text-white placeholder-white/20 transition-all text-sm leading-relaxed"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Button 
-                  onClick={() => handleUpdateTicket("In-Progress")}
-                  disabled={isUpdating}
-                  className="bg-white/5 hover:bg-white/10 text-white h-14 rounded-2xl font-black uppercase text-[10px] tracking-widest border border-white/10"
-                >
-                  Hold / Draft
-                </Button>
-                <Button 
-                  onClick={() => handleUpdateTicket("Completed")}
-                  disabled={isUpdating}
-                  className="bg-[#CE1126] hover:bg-[#CE1126]/90 text-white h-14 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-[#CE1126]/30"
-                >
-                  {isUpdating ? "Delivering..." : "Deliver Review"}
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <MetricAnalysisModal
+        ticket={selectedTicket}
+        isOpen={!!selectedTicket}
+        onClose={() => setSelectedTicket(null)}
+        onSave={async (fb, nt, mt) => {
+          await handleUpdateTicket("Completed", fb, nt, mt);
+        }}
+        isSaving={isUpdating}
+      />
     </div>
   );
 }

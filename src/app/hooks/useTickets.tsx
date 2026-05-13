@@ -27,6 +27,8 @@ export interface CoachingTicket {
   status: TicketStatus;
   annotatedVodUrl?: string;
   feedback?: string;
+  notes?: string;
+  metrics?: Record<string, number>;
   createdAt: string;
 }
 
@@ -79,12 +81,21 @@ export function useTickets() {
     }
   };
 
-  const updateTicketStatus = async (ticketId: string, status: TicketStatus, annotatedVodUrl?: string, feedback?: string) => {
+  const updateTicketStatus = async (
+    ticketId: string, 
+    status: TicketStatus, 
+    annotatedVodUrl?: string, 
+    feedback?: string,
+    notes?: string,
+    metrics?: Record<string, number>
+  ) => {
     try {
       const ticketRef = doc(db, "tickets", ticketId);
       const updateData: any = { status };
       if (annotatedVodUrl) updateData.annotatedVodUrl = annotatedVodUrl;
       if (feedback) updateData.feedback = feedback;
+      if (notes) updateData.notes = notes;
+      if (metrics) updateData.metrics = metrics;
 
       await updateDoc(ticketRef, updateData);
 
