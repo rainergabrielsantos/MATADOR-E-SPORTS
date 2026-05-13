@@ -56,6 +56,7 @@ export function PathToPro() {
     <div className="p-8 max-w-7xl mx-auto space-y-12 animate-in fade-in duration-700">
       <PageHeader
         title="Path To Pro"
+        subtitle="Glory, Greatness, Guts"
         backTo="/dashboard"
         backLabel="Dashboard"
       />
