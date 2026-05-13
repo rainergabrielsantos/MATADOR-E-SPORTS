@@ -176,7 +176,7 @@ export function CommunityPage() {
     <div className="p-8 max-w-7xl mx-auto space-y-12 animate-in fade-in duration-700">
       <PageHeader
         title="Active Recruitment"
-        subtitle="The pulse of Matador E-Sports. Join active squads, find partners, and build your team."
+        subtitle="Join active squads, find partners, and win together.. or lose trying"
         backTo="/dashboard"
         backLabel="Home"
         action={

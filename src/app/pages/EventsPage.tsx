@@ -91,7 +91,7 @@ export function EventsPage() {
     <div className="p-8 max-w-7xl mx-auto space-y-12 animate-in fade-in duration-700">
       <PageHeader
         title="CSUN Campus Events"
-        subtitle="Discover tournaments,official Esports events and casual hangouts with other Matadors."
+        subtitle="Discover official tournaments, Esports events, and games with other Matadors"
         backTo="/dashboard/community"
         backLabel="Community Hub"
         action={
