@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useTickets } from "../hooks/useTickets";
+import { usePlayerStats } from "../hooks/usePlayerStats";
 import { PageHeader } from "../components/PageHeader";
 import { 
-  LineChart, 
-  Line, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
@@ -22,30 +21,30 @@ import {
   Clock, 
   Zap, 
   Star,
-  ChevronRight
+  ChevronRight,
+  AlertCircle
 } from "lucide-react";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 
-// Sample improvement data
-const skillData = [
-  { month: "Jan", aim: 65, sense: 40, mental: 70 },
-  { month: "Feb", aim: 68, sense: 45, mental: 72 },
-  { month: "Mar", aim: 75, sense: 55, mental: 70 },
-  { month: "Apr", aim: 82, sense: 60, mental: 75 },
-  { month: "May", aim: 85, sense: 70, mental: 80 },
-  { month: "Jun", aim: 88, sense: 78, mental: 85 },
-];
-
 export function PathToPro() {
   const { user } = useAuth();
-  const { tickets, loading } = useTickets();
+  const { tickets, loading: ticketsLoading } = useTickets();
+  const { stats, loading: statsLoading } = usePlayerStats(user?.id);
   const [activeMetric, setActiveMetric] = useState<"aim" | "sense" | "mental">("aim");
 
   const playerTickets = tickets.filter(t => t.player_id === user?.id && t.status === "Completed");
 
-  if (loading) {
+  const chartData = useMemo(() => {
+    if (!stats || !stats.history || stats.history.length === 0) return [];
+    return stats.history.map(h => ({
+      ...h,
+      month: new Date(h.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' })
+    }));
+  }, [stats]);
+
+  if (ticketsLoading || statsLoading) {
     return (
       <div className="flex items-center justify-center min-h-[500px]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#CE1126]"></div>
@@ -94,59 +93,66 @@ export function PathToPro() {
           </div>
 
           <div className="h-[350px] w-full mt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={skillData}>
-                <defs>
-                  <linearGradient id="colorMetric" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#60a5fa" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-                <XAxis 
-                  dataKey="month" 
-                  stroke="#a8b2bf" 
-                  fontSize={10} 
-                  tickLine={false} 
-                  axisLine={false}
-                  dy={10}
-                />
-                <YAxis 
-                  stroke="#a8b2bf" 
-                  fontSize={10} 
-                  tickLine={false} 
-                  axisLine={false}
-                  domain={[0, 100]}
-                />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#131318', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
-                  itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey={activeMetric} 
-                  stroke="#60a5fa" 
-                  strokeWidth={4} 
-                  fillOpacity={1} 
-                  fill="url(#colorMetric)" 
-                  animationDuration={1500}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            {chartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="colorMetric" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#60a5fa" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+                  <XAxis 
+                    dataKey="month" 
+                    stroke="#a8b2bf" 
+                    fontSize={10} 
+                    tickLine={false} 
+                    axisLine={false}
+                    dy={10}
+                  />
+                  <YAxis 
+                    stroke="#a8b2bf" 
+                    fontSize={10} 
+                    tickLine={false} 
+                    axisLine={false}
+                    domain={[0, 100]}
+                  />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#131318', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                    itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey={activeMetric} 
+                    stroke="#60a5fa" 
+                    strokeWidth={4} 
+                    fillOpacity={1} 
+                    fill="url(#colorMetric)" 
+                    animationDuration={1500}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
+                <AlertCircle className="h-12 w-12 text-white/5" />
+                <p className="text-[#a8b2bf] text-sm max-w-xs">No skill data recorded yet. Your coach will update your metrics after your next session.</p>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-3 gap-4 pt-4">
             <div className="bg-white/5 border border-white/5 rounded-2xl p-4 text-center">
               <p className="text-[10px] text-[#a8b2bf] uppercase font-bold tracking-widest mb-1">Current Aim</p>
-              <p className="text-2xl font-black text-white italic">88%</p>
+              <p className="text-2xl font-black text-white italic">{stats?.current?.aim || 0}%</p>
             </div>
             <div className="bg-white/5 border border-white/5 rounded-2xl p-4 text-center">
               <p className="text-[10px] text-[#a8b2bf] uppercase font-bold tracking-widest mb-1">Game Sense</p>
-              <p className="text-2xl font-black text-blue-400 italic">78%</p>
+              <p className="text-2xl font-black text-blue-400 italic">{stats?.current?.sense || 0}%</p>
             </div>
             <div className="bg-white/5 border border-white/5 rounded-2xl p-4 text-center">
               <p className="text-[10px] text-[#a8b2bf] uppercase font-bold tracking-widest mb-1">Mental</p>
-              <p className="text-2xl font-black text-white italic">85%</p>
+              <p className="text-2xl font-black text-white italic">{stats?.current?.mental || 0}%</p>
             </div>
           </div>
         </div>
@@ -197,7 +203,7 @@ export function PathToPro() {
               {playerTickets.length === 0 ? (
                 <div className="bg-white/[0.02] border border-dashed border-white/10 rounded-[1.5rem] p-8 text-center space-y-3">
                   <Star className="h-8 w-8 text-white/10 mx-auto" />
-                  <p className="text-[10px] text-[#a8b2bf] font-black uppercase tracking-widest leading-relaxed">Submit a VOD to receive specialized feedback from your coach.</p>
+                  <p className="text-[10px] text-[#a8b2bf] font-black uppercase tracking-widest leading-relaxed">Submit a request to receive specialized feedback from your coach.</p>
                 </div>
               ) : (
                 playerTickets.map(ticket => (
