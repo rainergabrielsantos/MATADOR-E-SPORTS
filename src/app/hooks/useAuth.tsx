@@ -17,6 +17,8 @@ export interface User {
   role: Role;
   csunId: string;
   avatar?: string;
+  games?: string;
+  mainRole?: string;
 }
 
 interface AuthContextType {
