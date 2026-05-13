@@ -20,10 +20,13 @@ export interface CoachingTicket {
   playerName: string;
   coach_id?: string;
   coachName?: string;
-  vodLink: string;
+  vodLink?: string;
+  game: string;
+  helpType: string;
   goals: string;
   status: TicketStatus;
   annotatedVodUrl?: string;
+  feedback?: string;
   createdAt: string;
 }
 
@@ -76,11 +79,12 @@ export function useTickets() {
     }
   };
 
-  const updateTicketStatus = async (ticketId: string, status: TicketStatus, annotatedVodUrl?: string) => {
+  const updateTicketStatus = async (ticketId: string, status: TicketStatus, annotatedVodUrl?: string, feedback?: string) => {
     try {
       const ticketRef = doc(db, "tickets", ticketId);
       const updateData: any = { status };
       if (annotatedVodUrl) updateData.annotatedVodUrl = annotatedVodUrl;
+      if (feedback) updateData.feedback = feedback;
 
       await updateDoc(ticketRef, updateData);
 
@@ -88,14 +92,14 @@ export function useTickets() {
         addNotification(
           "ticket",
           "Coaching Review Ready",
-          "Your VOD has been reviewed! Click to view feedback.",
+          "Your request has been reviewed! Click to view feedback.",
           "/dashboard/path-to-pro"
         );
       } else if (status === "In-Progress") {
         addNotification(
           "system",
           "Review Started",
-          `A coach has started analyzing your VOD.`
+          `A coach has started analyzing your request.`
         );
       }
     } catch (error) {

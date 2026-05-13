@@ -11,7 +11,9 @@ export function LeftSidebar() {
   
   const navItems = [
     { icon: Home,   label: "Home Dashboard",      path: "/dashboard" },
-    { icon: Trophy, label: "The Pro Pipeline",     path: "/dashboard/path-to-pro" },
+    user?.role === 'Member' 
+      ? { icon: Trophy, label: "Coaching Hub",       path: "/dashboard/member-coaching" }
+      : { icon: Trophy, label: "The Pro Pipeline",   path: "/dashboard/path-to-pro" },
     { icon: Users,  label: "Community Hub",        path: "/dashboard/community" },
     { icon: Swords, label: "Events & Scrimmages",  path: "/dashboard/events" },
   ];

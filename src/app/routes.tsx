@@ -14,6 +14,7 @@ import { TeamDashboard } from "./pages/TeamDashboard";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ProfilePage } from "./pages/ProfilePage";
 import { MyEventsPage } from "./pages/MyEventsPage";
+import { MemberCoaching } from "./pages/MemberCoaching";
 
 function RootLayout() {
   return (
@@ -47,6 +48,7 @@ export const router = createBrowserRouter([
       { path: "community", Component: CommunityPage },
       { path: "profile", Component: ProfilePage },
       { path: "my-events", Component: MyEventsPage },
+      { path: "member-coaching", Component: MemberCoaching },
       {
         path: "team",
         element: (
