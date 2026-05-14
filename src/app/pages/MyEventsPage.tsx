@@ -82,7 +82,7 @@ export function MyEventsPage() {
                       View Hub Post <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </NavLink>
-                  <Button 
+                  <Button
                     onClick={() => toggleRSVP(event.id)}
                     className="flex-1 h-14 rounded-2xl bg-green-500/10 text-green-500 border border-green-500/20 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/20 transition-all font-black uppercase text-[10px] tracking-widest group"
                   >

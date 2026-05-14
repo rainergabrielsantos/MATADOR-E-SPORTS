@@ -101,7 +101,7 @@ export function CoachTerminal() {
     if (!selectedPlayer) return;
     setIsSavingStats(true);
     try {
-      await updatePlayerStats(selectedPlayer.id, metrics);
+      await updatePlayerStats(selectedPlayer.id, "General", metrics);
       toast.success(`Metrics updated for ${selectedPlayer.name}`);
       setSelectedPlayer(null);
     } catch (error) {

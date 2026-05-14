@@ -210,13 +210,12 @@ export function ScoutingBoard() {
               {applicants.map((applicant) => (
                 <div
                   key={applicant.id}
-                  className={`bg-[#0d0d12] border rounded-xl p-4 transition-all ${
-                    applicant.status === "Accepted"
+                  className={`bg-[#0d0d12] border rounded-xl p-4 transition-all ${applicant.status === "Accepted"
                       ? "border-green-600/30"
                       : applicant.status === "Declined"
-                      ? "border-red-900/30 opacity-60"
-                      : "border-white/10 hover:border-[#CE1126]/30"
-                  }`}
+                        ? "border-red-900/30 opacity-60"
+                        : "border-white/10 hover:border-[#CE1126]/30"
+                    }`}
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div>
@@ -226,13 +225,12 @@ export function ScoutingBoard() {
                       </p>
                     </div>
                     <Badge
-                      className={`text-xs ${
-                        applicant.status === "Accepted"
+                      className={`text-xs ${applicant.status === "Accepted"
                           ? "bg-green-500/20 text-green-400"
                           : applicant.status === "Declined"
-                          ? "bg-red-900/20 text-red-400"
-                          : "bg-white/10 text-[#a8b2bf]"
-                      }`}
+                            ? "bg-red-900/20 text-red-400"
+                            : "bg-white/10 text-[#a8b2bf]"
+                        }`}
                     >
                       {applicant.status}
                     </Badge>
@@ -300,13 +298,12 @@ export function ScoutingBoard() {
               <div className="flex gap-2">
                 {priorities.map((p) => (
                   <button key={p} onClick={() => setBountyForm((f) => ({ ...f, priority: p }))}
-                    className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all border ${
-                      bountyForm.priority === p
+                    className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all border ${bountyForm.priority === p
                         ? p === "High" ? "bg-[#CE1126]/20 text-[#CE1126] border-[#CE1126]/40"
                           : p === "Medium" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/40"
-                          : "bg-white/10 text-[#a8b2bf] border-white/20"
+                            : "bg-white/10 text-[#a8b2bf] border-white/20"
                         : "bg-white/5 text-[#a8b2bf] border-white/10 hover:bg-white/10"
-                    }`}>
+                      }`}>
                     {p}
                   </button>
                 ))}
@@ -335,11 +332,10 @@ export function ScoutingBoard() {
           <div className="flex items-center gap-2 py-1">
             {applySteps.map((step, i) => (
               <div key={step} className="flex items-center gap-2">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                  i < applyStep ? "bg-green-500 text-white"
-                  : i === applyStep ? "bg-[#CE1126] text-white"
-                  : "bg-white/10 text-[#a8b2bf]"
-                }`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${i < applyStep ? "bg-green-500 text-white"
+                    : i === applyStep ? "bg-[#CE1126] text-white"
+                      : "bg-white/10 text-[#a8b2bf]"
+                  }`}>
                   {i < applyStep ? "✓" : i + 1}
                 </div>
                 <span className={`text-xs ${i === applyStep ? "text-white" : "text-[#a8b2bf]"}`}>{step}</span>

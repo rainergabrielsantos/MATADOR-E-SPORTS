@@ -6,3 +6,4 @@ export * from "./useTeam";
 export * from "./useMessages";
 export * from "./useNotifications";
 export * from "./ProtectedRoute";
+export * from "./usePlayerStats";
